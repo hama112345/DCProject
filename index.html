@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>選択制DC 事業推進ダッシュボード</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="site-header__inner">
+    <div>
+      <p class="eyebrow">選択制企業型確定拠出年金 ／ 社内用</p>
+      <h1>事業推進ダッシュボード</h1>
+      <p class="header-copy">全体像・未決論点・実行タスク・試算を、ひとつの流れで確認します。</p>
+    </div>
+    <a class="header-sim" href="simulator.html">シミュレータを開く <span>→</span></a>
+  </div>
+</header>
+
+<div class="mobile-nav" aria-label="ページ内ナビゲーション">
+  <a href="#overview">全体像</a>
+  <a href="#roadmap">ロードマップ</a>
+  <a href="#tasks">タスク</a>
+  <a href="#issues">論点</a>
+  <a href="#revenue">収益設計</a>
+  <a href="#simulator">試算</a>
+</div>
+
+<div class="layout">
+  <aside class="side-nav">
+    <div class="side-nav__title">PROJECT MAP</div>
+    <nav aria-label="ページ内ナビゲーション">
+      <a href="#overview" data-nav="overview"><span>01</span>プロジェクト全体像</a>
+      <a href="#roadmap" data-nav="roadmap"><span>02</span>ロードマップ</a>
+      <a href="#tasks" data-nav="tasks"><span>03</span>行うべきタスク</a>
+      <a href="#issues" data-nav="issues"><span>04</span>検討する論点</a>
+      <a href="#revenue" data-nav="revenue"><span>05</span>収益設計</a>
+      <a href="#simulator" data-nav="simulator"><span>06</span>シミュレーション</a>
+    </nav>
+
+    <div class="side-status">
+      <div class="status-label">未決事項</div>
+      <div class="status-number">14</div>
+      <div class="status-note">未着手 12 ／ 進行中 2</div>
+    </div>
+
+    <a class="side-sim" href="simulator.html">別画面で試算する →</a>
+  </aside>
+
+  <main class="main">
+    <section id="overview" class="section hero-section" data-section="overview">
+      <div class="section-kicker">01 / OVERVIEW</div>
+      <div class="hero-grid">
+        <div>
+          <h2>まず、プロジェクトの全体像をつかむ</h2>
+          <p class="section-lead">この事業が何をするものか、どの順番で進めるか、何を測りながら事業化するかを最初に揃えます。</p>
+        </div>
+        <div class="hero-action">
+          <p>数字を先に見たい場合</p>
+          <a href="simulator.html">会社全体のインパクトを試算 <span>→</span></a>
+        </div>
+      </div>
+
+      <div class="summary-grid">
+        <article class="summary-card">
+          <span class="summary-no">01</span>
+          <h3>会社の負担ゼロで始められる</h3>
+          <p>選択制は、従業員が自分の給与の一部を積立に回す仕組みです。会社が掛金を出さなくても制度を持てるので、導入の判断がしやすい。</p>
+        </article>
+        <article class="summary-card">
+          <span class="summary-no">02</span>
+          <h3>会社も従業員も社会保険料が下がる</h3>
+          <p>積立に回した分は給与とみなされないため、社会保険料の計算対象から外れます。iDeCoにはない、選択制だけの効果です。</p>
+        </article>
+        <article class="summary-card">
+          <span class="summary-no">03</span>
+          <h3>導入支援が私たちの仕事</h3>
+          <p>私たちは運営会社ではなく、提案・制度設計・従業員説明・年1回の投資教育を担う立場です。</p>
+        </article>
+        <article class="summary-card summary-card--accent">
+          <span class="summary-no">04</span>
+          <h3>第1段階は「稼ぐため」ではなく「測るため」</h3>
+          <p>加入率、説明会の所要時間、出てくる質問。ここが分からないまま第2段階に進むと、料金体系も工数の見積もりも根拠を持てません。</p>
+        </article>
+      </div>
+
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <span class="panel-label">BUSINESS FLOW</span>
+            <h3>仕事の流れ</h3>
+          </div>
+          <p>営業から継続支援まで、6ステップで回します。</p>
+        </div>
+        <div class="flow">
+          <div class="flow-item"><span>1</span><div><b>DMと訪問で課題を聞く</b><p>退職金や福利厚生の悩みを聞き取る。制度の売り込みから入らない。</p></div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item"><span>2</span><div><b>受けるかどうかを判断する</b><p>従業員数と給与水準を見て、採算が合うかを先に確かめる。合わなければ断る。</p></div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item"><span>3</span><div><b>試算を出して提案する</b><p>いくら下がるか、従業員はどう得をするかを数字で示す。</p></div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item"><span>4</span><div><b>合意したら6か月かけて導入</b><p>規程の整備、国への申請、従業員説明、加入手続き。</p></div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item"><span>5</span><div><b>施行から半年後に効果が出る</b><p>社会保険料が実際に下がるのは、施行の3〜5か月後です。</p></div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item"><span>6</span><div><b>毎年の投資教育で関係を続ける</b><p>年1回の教育は法律上必要。ここから顧問や保険の相談につなげる。</p></div></div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-heading">
+            <div><span class="panel-label">3 STAGES</span><h3>展開は3段階</h3></div>
+          </div>
+          <div class="stage-list">
+            <div class="stage-item"><span>第1段階</span><div><b>既存の顧問先</b><p>実運用の負荷、投入工数、顧客の反応を実測する</p></div></div>
+            <div class="stage-item"><span>第2段階</span><div><b>ダイレクトメールと会報誌からの新規開拓</b><p>面談の成立確度を上げ、導入までの期間を短くする</p></div></div>
+            <div class="stage-item"><span>第3段階</span><div><b>説明会の参加者を含む広い層</b><p>個別面談へ移行し、案件化する</p></div></div>
+          </div>
+        </div>
+
+        <div class="panel panel--notice">
+          <div class="panel-heading">
+            <div><span class="panel-label">GUARDRAILS</span><h3>これだけは守ること</h3></div>
+          </div>
+          <ul class="guard-list">
+            <li><b>「社会保険料が下がります」から話を始めない。</b><span>退職金・福利厚生・資産形成の見直しという入口から入る。</span></li>
+            <li><b>デメリットを必ず同じ場で伝える。</b><span>60歳まで引き出せないこと、将来の年金や手当が減ることを隠さない。</span></li>
+            <li><b>掛金の金額を一律にしない。</b><span>若い人や子育て世代に大きな金額を勧めない。</span></li>
+            <li><b>説明会では保険の話をしない。</b></li>
+            <li><b>説明した記録を残す。</b><span>後から「聞いていない」と言われないために。</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="roadmap" class="section" data-section="roadmap">
+      <div class="section-kicker">02 / ROADMAP</div>
+      <div class="section-head">
+        <div>
+          <h2>ロードマップ</h2>
+          <p class="section-lead">プロジェクトを「自社の準備」「営業」「第1号案件」の3本で同時に進めます。</p>
+        </div>
+      </div>
+
+      <div class="alert alert--strong">
+        <div class="alert-icon">!</div>
+        <div>
+          <b>申請の締切ルールは運営側に確認してください。</b>
+          <p>ここが1か月動くだけで、第1波の契約期限が変わります。日程を口にする前に確定させること。</p>
+        </div>
+      </div>
+
+      <div class="track-grid">
+        <article class="track-card">
+          <div class="track-top"><span>TRACK 01</span><b>自社の準備</b></div>
+          <div class="track-time">8〜10月</div>
+          <p>報酬設計の決定、試算表の作成、説明会ルールの文書化、体制づくり</p>
+          <div class="track-deadline">判断の期限　9月上旬</div>
+        </article>
+        <article class="track-card">
+          <div class="track-top"><span>TRACK 02</span><b>営業</b></div>
+          <div class="track-time">9月〜継続</div>
+          <p>DM発出（300〜500社）、10月中旬までに先行接触、本命2〜3社を選定</p>
+          <div class="track-deadline">判断の期限　9月中にDM</div>
+        </article>
+        <article class="track-card">
+          <div class="track-top"><span>TRACK 03</span><b>第1号案件</b></div>
+          <div class="track-time">9月〜翌3月</div>
+          <p>合意 → 規程整備 → 国の審査 → 説明会 → 施行</p>
+          <div class="track-deadline">判断の期限　9月中に合意</div>
+        </article>
+      </div>
+
+      <div class="panel">
+        <div class="panel-heading">
+          <div><span class="panel-label">WAVES</span><h3>営業から制度開始までの波</h3></div>
+        </div>
+        <div class="wave">
+          <div class="wave-row wave-row--head">
+            <span>波</span><span>入口</span><span>契約</span><span>制度開始</span>
+          </div>
+          <div class="wave-row wave-row--focus">
+            <span><b>第1波</b></span><span>ダイレクトメール・既存顧問先</span><span>2026年10〜11月</span><span><b>2027年4月</b></span>
+          </div>
+          <div class="wave-row">
+            <span><b>第2波</b></span><span>説明会の参加者</span><span>2026年12月〜2027年1月</span><span>2027年7〜10月</span>
+          </div>
+        </div>
+        <div class="inline-note">
+          <b>第2波は急いでも得をしません。</b>
+          <span>1等級しか下がらない層は定時決定を待つため、4月開始を逃した時点で削減が始まるのは翌年9月です。7月開始でも10月開始でも同じ。日程を詰めるより、掛金を「2等級以上下がる水準」に設計して随時改定に乗せるほうが効きます。</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-heading">
+          <div><span class="panel-label">IMPLEMENTATION</span><h3>導入の6か月で、誰が何をするか</h3></div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>時期</th><th>導入企業</th><th>私たち</th><th>運営会社</th></tr></thead>
+            <tbody>
+              <tr><td>6か月前</td><td>合意書類・会社規程を提出</td><td>聞き取り・制度設計・規程の確認</td><td>専用規程の作成</td></tr>
+              <tr><td>5か月前</td><td>申請書類に押印</td><td>書類の取りまとめ</td><td>申請書類の作成</td></tr>
+              <tr><td>4か月前</td><td>─</td><td>説明会資料の準備・等級試算</td><td>規約書類の作成</td></tr>
+              <tr><td>3か月前</td><td>従業員説明会・個別相談</td><td>説明会の実施</td><td>国へ規約の申請</td></tr>
+              <tr><td>2か月前</td><td>賃金規程・給与明細の変更</td><td>事務の対応支援</td><td>国の審査</td></tr>
+              <tr><td>前月</td><td>加入者の登録（20日締切）</td><td>登録の支援</td><td>規約の承認</td></tr>
+              <tr><td>施行月</td><td>運用商品の登録</td><td>投資教育の開始</td><td>制度スタート</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-heading">
+          <div><span class="panel-label">FIRST CASE</span><h3>第1号で何を検証するか</h3></div>
+        </div>
+        <div class="metric-grid">
+          <div><span>01</span><b>実際の稼働時間</b><p>提案から施行まで何時間かかったかを記録する。これで損益分岐の前提が確定します。</p></div>
+          <div><span>02</span><b>加入率</b><p>説明会の質と給与水準で何%が積立を選ぶか。ここが収益の最大の変動要因です。</p></div>
+          <div><span>03</span><b>等級の落ち方</b><p>試算と実際の通知書がどれだけ一致したか。ずれるなら試算方法を直します。</p></div>
+          <div><span>04</span><b>個別相談の希望率</b><p>希望者のみにした場合に何%が申し込むか。保険収益の見通しが立ちます。</p></div>
+          <div><span>05</span><b>総務の負担感</b><p>導入後の事務が回るか。回らないなら支援メニューが必要です。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tasks" class="section" data-section="tasks">
+      <div class="section-kicker">03 / TASKS</div>
+      <div class="section-head">
+        <div>
+          <h2>行うべきタスク</h2>
+          <p class="section-lead">「最優先」「進行中」「未着手」を一画面で確認します。まず未完了だけを表示しています。</p>
+        </div>
+        <div class="task-summary">
+          <span><b>12</b> 未着手</span>
+          <span><b>2</b> 進行中</span>
+          <span><b>1</b> 完了</span>
+        </div>
+      </div>
+
+      <div class="filter-row" aria-label="タスク絞り込み">
+        <button class="filter-btn is-active" data-filter="open">未完了のみ</button>
+        <button class="filter-btn" data-filter="priority">最優先</button>
+        <button class="filter-btn" data-filter="doing">進行中</button>
+        <button class="filter-btn" data-filter="todo">未着手</button>
+        <button class="filter-btn" data-filter="all">すべて</button>
+      </div>
+
+      <div class="task-list" id="taskList">
+        <article class="task-card" data-status="todo" data-priority="priority">
+          <div class="task-status"><span class="dot dot--red"></span>未着手</div>
+          <div class="task-body"><h3>規約の承認申請の締切ルールを確定させる</h3><p>制度開始月から逆算した期限までに申請を完了させる必要があるとされている。ここが1か月動くだけで、第1波の契約期限そのものが変わる。契約から申請までに要する実日数もあわせて確認する。日程を提案書やセミナーで口にする前に確定させること。</p></div>
+          <div class="task-due">最優先 / 今週</div>
+        </article>
+        <article class="task-card" data-status="todo" data-priority="priority">
+          <div class="task-status"><span class="dot dot--red"></span>未着手</div>
+          <div class="task-body"><h3>建設業の経営事項審査の加点要件を確認する</h3><p>労働福祉の状況では、退職一時金制度または企業年金制度の導入が加点対象で、企業年金制度には企業型の確定拠出年金が含まれる。ただし加点には従事する従業員全員が対象である必要があり、一部の役職者のみでは加点されない。希望者のみが加入する選択制でこの要件を満たすかが未確認。満たすなら、建設業への入口は社会保険料ではなく入札の評点になる。</p></div>
+          <div class="task-due">最優先 / ダイレクトメール校了まで</div>
+        </article>
+        <article class="task-card" data-status="todo" data-priority="priority">
+          <div class="task-status"><span class="dot dot--red"></span>未着手</div>
+          <div class="task-body"><h3>介護・福祉の処遇改善加算との関係を確認する</h3><p>加算は賃金改善額の実績報告を伴う。選択制で賃金総額が下がったとき、報告上どう扱われるのか。返還リスクの有無を確認するまで、この業種への提案は保留する。案内を出してから聞かれて答えられないのが最悪の形。</p></div>
+          <div class="task-due">最優先 / この業種へ出す前</div>
+        </article>
+        <article class="task-card" data-status="doing">
+          <div class="task-status"><span class="dot dot--amber"></span>進行中</div>
+          <div class="task-body"><h3>料金レンジの刻みと金額を決める</h3><p>規模レンジ別の固定料金という方針は決定済み。残るのは階段の刻みと金額。加入率の実測値がないと根拠を持てないため、第1段階の数社で測ってから確定させる。継続支援を複数年でパッケージ化する構想もあわせて詰める。</p></div>
+          <div class="task-due">説明会資料の締切まで</div>
+        </article>
+        <article class="task-card" data-status="doing">
+          <div class="task-status"><span class="dot dot--amber"></span>進行中</div>
+          <div class="task-body"><h3>第1段階で加入率を実測する</h3><p>加入率が会社側の削減額をそのまま決める最大の変数。実績がないため現在は仮置きしかできない。説明会の所要時間、出てくる質問、投入工数もあわせて記録する。ここが埋まらないと料金体系も工数見積もりも根拠を持てない。</p></div>
+          <div class="task-due">既存顧問先への訪問と同時</div>
+        </article>
+        <article class="task-card" data-status="todo">
+          <div class="task-status"><span class="dot dot--red"></span>未着手</div>
+          <div class="task-body"><h3>掛金の変更・停止が可能かを規約で確認する</h3><p>提案書の記載に食い違いがあるように読める。純粋な選択制と会社拠出併用型で扱いが違う可能性。説明会で必ず聞かれるので、確定した答えが必要。推測で答えないこと。</p></div>
+          <div class="task-due">説明会の前まで</div>
+        </article>
+        <article class="task-card" data-status="todo">
+          <div class="task-status"><span class="dot dot--red"></span>未着手</div>
+          <div class="task-body"><h3>制度をやめるときの手続きと費用を確認する</h3><p>会社の一存では終われない制度。廃止時に誰が何をするのか、費用は誰が持つのか、加入者の資産はどうなるのか。委託契約の範囲に含まれるかが未確認。提案時に説明できると信頼につながる。</p></div>
+          <div class="task-due">提案に出る前まで</div>
+        </article>
+        <article class="task-card" data-status="todo">
+          <div class="task-status"><span class="dot dot--red"></span>未着手</div>
+          <div class="task-body"><h3>最低賃金の抵触チェックを手順にする</h3><p>選択制は額面が下がるため、パート・短時間勤務者や若年層で最低賃金を下回るケースがあり得る。誰が、いつ、どうやって確認するかを手順として決める。見落とすと違法状態になる。</p></div>
+          <div class="task-due">第1号の導入前まで</div>
+        </article>
+        <article class="task-card" data-status="todo">
+          <div class="task-status"><span class="dot dot--red"></span>未着手</div>
+          <div class="task-body"><h3>社労士法上の独占業務との線引きを確認する</h3><p>算定基礎届の作成・提出代行は独占業務。どこまでを支援と呼べるのか。提携する社労士との役割分担もあわせて決める。</p></div>
+          <div class="task-due">第1号の導入前まで</div>
+        </article>
+        <article class="task-card" data-status="todo">
+          <div class="task-status"><span class="dot dot--red"></span>未着手</div>
+          <div class="task-body"><h3>労災保険の取扱いを確認する</h3><p>労災保険料も賃金総額を基礎とするため、理屈のうえでは選択制の掛金分だけ軽減される可能性がある。ただし料率が業種によって大きく異なるため、現在の試算には含めていない。建設業では影響が大きい。</p></div>
+          <div class="task-due">正確な試算が要る案件が出たとき</div>
+        </article>
+        <article class="task-card" data-status="done">
+          <div class="task-status"><span class="dot dot--green"></span>完了</div>
+          <div class="task-body"><h3>個人向け営業を当面行わない方針を決める</h3><p>従業員個人への金融商品の提案は当面行わず、収益は顧問契約と法人保険で取る。個人収益を事業計画に組み込むと移行率を下げる判断ができなくなるため。見直す条件は「収益の取り方」タブに記載。</p></div>
+          <div class="task-due">決定済み</div>
+        </article>
+        <article class="task-card" data-status="todo">
+          <div class="task-status"><span class="dot dot--red"></span>未着手</div>
+          <div class="task-body"><h3>デメリット説明の標準文面をつくる</h3><p>何を、どの順番で、どう記録に残すか。人によって説明の内容が変わらないようにする。「手取りは減ります」から始める順番、失う給付の一覧、勧めるべきでない人の判定を含める。</p></div>
+          <div class="task-due">第1号の説明会まで</div>
+        </article>
+        <article class="task-card" data-status="todo">
+          <div class="task-status"><span class="dot dot--red"></span>未着手</div>
+          <div class="task-body"><h3>説明会後の受け皿を決める</h3><p>参加企業から個別面談の希望が出たとき、誰が何社まで持てるのか。受ける基準と、断り方も先に決めておく。集客だけ成功して捌けないのが一番もったいない。</p></div>
+          <div class="task-due">説明会の前まで</div>
+        </article>
+        <article class="task-card" data-status="todo">
+          <div class="task-status"><span class="dot dot--red"></span>未着手</div>
+          <div class="task-body"><h3>継続投資教育の実施体制を決める</h3><p>継続的な投資教育は事業主の努力義務として毎年発生する。導入企業が10社20社になったとき、年何回・誰が回すのか。ここが顧問契約の根拠でもあるので、回せる体制とセットで設計する。</p></div>
+          <div class="task-due">導入企業が増える前</div>
+        </article>
+        <article class="task-card" data-status="todo">
+          <div class="task-status"><span class="dot dot--red"></span>未着手</div>
+          <div class="task-body"><h3>運営側からの分配単価を確定させる</h3><p>加入者1名あたり月数百円との情報。事業として成立する規模ではないため、導入企業から受け取る報酬が収入の全額になる前提で設計する必要がある。正確な単価と支払時期を確認する。</p></div>
+          <div class="task-due">料金決定まで</div>
+        </article>
+      </div>
+    </section>
+
+    <section id="issues" class="section" data-section="issues">
+      <div class="section-kicker">04 / ISSUES</div>
+      <div class="section-head">
+        <div>
+          <h2>検討するべき論点</h2>
+          <p class="section-lead">「決まっている」「有力」「未決」を混ぜずに表示します。未決の論点から順に確認できます。</p>
+        </div>
+      </div>
+
+      <div class="issue-grid">
+        <details class="issue-card issue-card--open" open>
+          <summary><span class="issue-no">03</span><div><b>規模によって料率を変えるか</b><small>未決</small></div><span class="chev">＋</span></summary>
+          <div class="issue-content"><p><b>背景</b><br>稼働は規模に比例しない。小さいほど固定費の比率を上げるのが理屈に合う。</p><p><b>判断のポイント</b><br>変える場合、小規模ほど成果報酬の料率を下げることになります。これは掛金を膨らませる動機を、説明が行き届きにくい小規模企業で抑える効果もあります。</p><div class="choices"><span>一律にする — 説明が簡単</span><span>規模別に変える — 理屈に合うが説明が要る</span></div></div>
+        </details>
+        <details class="issue-card issue-card--open" open>
+          <summary><span class="issue-no">05</span><div><b>50名未満をどう扱うか</b><small>未決</small></div><span class="chev">＋</span></summary>
+          <div class="issue-content"><p><b>背景</b><br>成果報酬だけでは確実に赤字。ただし1名から導入できる制度なので、問い合わせは来る。</p><p><b>判断のポイント</b><br>断る場合の言い方を用意しておく必要があります。「削減額が小さくても手間は変わらないので」という説明は経営者にも通じるはずです。</p><div class="choices"><span>原則断る — 評判は守れるが機会を逃す</span><span>導入支援フィーを厚くして受ける — 案Cならこれが可能</span></div></div>
+        </details>
+        <details class="issue-card issue-card--open">
+          <summary><span class="issue-no">07</span><div><b>継続支援の中身と価格</b><small>未決</small></div><span class="chev">＋</span></summary>
+          <div class="issue-content"><p><b>背景</b><br>投資教育は法令上毎年発生し、有料実施の方針。それ以外に何を含めるか。</p><p><b>判断のポイント</b><br>標準化しないと社数が増えたときに回りません。月額の根拠を説明できる形にする必要があります。</p><div class="choices"><span>投資教育のみ</span><span>投資教育＋事務サポート</span><span>さらに制度の年次見直しまで</span></div></div>
+        </details>
+        <details class="issue-card issue-card--open">
+          <summary><span class="issue-no">08</span><div><b>契約書に削減額をどう書くか</b><small>未決</small></div><span class="chev">＋</span></summary>
+          <div class="issue-content"><p><b>背景</b><br>期中の退職・入社・掛金変更で実額は動く。実額精算にすると毎年もめる。</p><p><b>判断のポイント</b><br>「通知書の等級差にもとづく年換算額」と定義するのが実務的です。ここを曖昧にしたまま契約すると、2年目以降に必ず問題になります。</p><div class="choices"><span>年換算額で固定 — もめない</span><span>毎年実額で精算 — 正確だが事務が重い</span></div></div>
+        </details>
+        <details class="issue-card issue-card--open">
+          <summary><span class="issue-no">09</span><div><b>会社側の純額をどう見せるか</b><small>未決</small></div><span class="chev">＋</span></summary>
+          <div class="issue-content"><p><b>背景</b><br>社会保険料の削減額と、会社に実際に残るキャッシュは別物。制度の運営コスト、当社への報酬、法人税を差し引くと、削減額の4割程度まで減る。初年度は導入費用が乗るためマイナスになることもある。</p><p><b>判断のポイント</b><br>「年間◯◯万円のCFが改善します」と削減額のまま伝えると、決算書を見た経営者から「話が違う」と言われます。削減額と純額を分けて示すこと自体が、信頼を得る手段になります。</p><div class="choices"><span>削減額だけを見せる</span><span class="choice-pick">削減額と純額を並べて見せる</span><span>純額だけを見せる</span></div></div>
+        </details>
+        <details class="issue-card issue-card--open">
+          <summary><span class="issue-no">10</span><div><b>社労士法・保険業法との線引き</b><small>要法務確認</small></div><span class="chev">＋</span></summary>
+          <div class="issue-content"><p><b>背景</b><br>算定基礎届や月額変更届の作成・提出代行は社労士の独占業務。保険提案には意向把握・情報提供義務がある。</p><p><b>判断のポイント</b><br>削減コンサルとしてどこまでが助言で、どこからが事務代理かの線引きが必要です。成果報酬型にする前に確認しておくべき論点です。</p><div class="choices"><span>社労士に確認する — 業務範囲の整理</span><span>弁護士・コンプライアンス確認 — 契約書と説明資料の両方</span></div></div>
+        </details>
+
+        <details class="issue-card issue-card--lean">
+          <summary><span class="issue-no">01</span><div><b>運営側からの分配はいくらか</b><small>ほぼゼロと判明</small></div><span class="chev">＋</span></summary>
+          <div class="issue-content"><p>運営側側からの分配は加入者1名あたり月数百円との情報。仮に月300円とすると、30名の会社（加入15名）で年5.4万円、100名（加入50名）でも年18万円。10社合計でも年54万円程度にとどまる。</p><p><b>これは事業として成立する規模ではありません。</b>したがって導入企業から受け取る報酬が、上乗せではなく収入そのものになります。単価と支払時期は要確認。</p></div>
+        </details>
+        <details class="issue-card issue-card--lean">
+          <summary><span class="issue-no">02</span><div><b>固定と成果のバランスをどうするか</b><small>案Cが有力</small></div><span class="chev">＋</span></summary>
+          <div class="issue-content"><p>成果報酬だけだと53名未満が赤字。加入率が20%に落ちると50名でも30万円の赤字になる。</p><p>案Cなら加入率20%でも黒字を保ちます。ただし導入支援フィーを別建てで請求する説明が必要になります。</p></div>
+        </details>
+        <details class="issue-card issue-card--lean">
+          <summary><span class="issue-no">04</span><div><b>成果報酬をいつ請求するか</b><small>通知書ベースが有力</small></div><span class="chev">＋</span></summary>
+          <div class="issue-content"><p>施行から削減確定まで5か月。合意からは13か月。</p><p>標準報酬月額決定通知書は第三者が発行する公的書類で、等級差が一意に確定します。争いになりません。</p></div>
+        </details>
+        <details class="issue-card issue-card--fixed">
+          <summary><span class="issue-no">06</span><div><b>保険収益を事業計画に入れるか</b><small>方針決定</small></div><span class="chev">＋</span></summary>
+          <div class="issue-content"><p><b>入れない。</b>保険収益を前提にすると、「今回は個別面談をやめておこう」という判断ができなくなります。DC単体で黒字化する設計にしておけば、保険はアップサイドとして扱えます。</p></div>
+        </details>
+      </div>
+    </section>
+
+    <section id="revenue" class="section" data-section="revenue">
+      <div class="section-kicker">05 / REVENUE DESIGN</div>
+      <div class="section-head">
+        <div>
+          <h2>収益設計</h2>
+          <p class="section-lead">現時点で決まった方針と、収益をどこで取るかを切り分けます。</p>
+        </div>
+      </div>
+
+      <div class="decision-panel">
+        <div class="decision-badge">決定事項</div>
+        <div>
+          <h3>規模レンジ別の固定料金にします</h3>
+          <p>削減額に連動した成果報酬ではなく、<b>従業員規模に応じたレンジ別の固定料金</b>とすることが決まりました。請求は導入の翌月または翌々月、分割・一括のどちらも可とします。あわせて、初年度の導入支援と次年度以降の継続支援を<b>複数年でパッケージ化する構想</b>が出ています。</p>
+        </div>
+      </div>
+
+      <div class="three-col">
+        <article class="info-card">
+          <span>決まったこと 01</span>
+          <h3>成果報酬をやめる</h3>
+          <p>選択制以外のパターンには削減額そのものが存在せず、連動型では値付けができない</p>
+        </article>
+        <article class="info-card">
+          <span>決まったこと 02</span>
+          <h3>規模レンジ別の固定料金にする</h3>
+          <p>投下時間と運用工数を、削減効果の大小に関係なく回収する必要がある</p>
+        </article>
+        <article class="info-card">
+          <span>決まったこと 03</span>
+          <h3>請求を導入の翌月・翌々月に</h3>
+          <p>成果報酬だと入金が1年以上先になる。資金繰りの問題として先に解決する</p>
+        </article>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-heading"><div><span class="panel-label">REVENUE POLICY</span><h3>収益の取り方</h3></div></div>
+          <p class="big-copy">従業員への個人向け営業は当面行いません。<br><b>顧問契約と法人保険に寄せます。</b></p>
+          <p>DCの説明会や継続投資教育を入口にして、従業員個人に金融商品を提案することは当面行いません。収益は顧問契約と法人向けの保険で取ります。</p>
+        </div>
+
+        <div class="panel">
+          <div class="panel-heading"><div><span class="panel-label">OPEN</span><h3>まだ決まっていないこと</h3></div></div>
+          <p class="big-copy"><b>レンジの刻みと、それぞれの金額です。</b></p>
+          <p>加入率の実測値がないと根拠を持てないため、第1段階の数社で測ってから確定させます。具体的な金額は提案書を参照してください。この資料には記載していません。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="simulator" class="section simulator-section" data-section="simulator">
+      <div class="section-kicker">06 / SIMULATION</div>
+      <div class="section-head">
+        <div>
+          <h2>その場で試算する</h2>
+          <p class="section-lead">従業員数・平均給与・加入率・拠出額を動かして、会社の削減規模と本人への影響を確認できます。</p>
+        </div>
+        <a class="open-full" href="simulator.html">別画面で大きく開く <span>↗</span></a>
+      </div>
+
+      <div class="sim-frame-wrap">
+        <div class="sim-frame-bar">
+          <span>選択制DC シミュレータ</span>
+          <a href="simulator.html">フルスクリーンで開く →</a>
+        </div>
+        <iframe src="simulator.html" title="選択制DC シミュレータ" loading="lazy"></iframe>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer class="footer">
+  <div>選択制DC 事業推進ダッシュボード ／ 社内用</div>
+  <a href="#overview">ページ上部へ ↑</a>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

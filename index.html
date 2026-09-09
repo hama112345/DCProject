@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>選択制DC 事業推進ダッシュボード</title>
-  <link rel="stylesheet" href="styles.css?v=proto-1">
+  <link rel="stylesheet" href="styles.css?v=proto-2">
 </head>
 <body>
   <header class="site-header">
     <div class="site-header__inner">
-      <div class="header-copy-wrap">
+      <div>
         <p class="eyebrow">選択制企業型確定拠出年金 ／ 社内用</p>
         <h1>事業推進ダッシュボード</h1>
-        <p class="header-copy">探索マップ・カンバン・ガント・シミュレーションをひとつにつないだ、Supabase連携前のUIプロトタイプです。</p>
+        <p class="header-copy">元資料集の全体像をベースに、探索マップ・かんばん・全体ガント・シミュレーションをつないだUI確認版です。</p>
       </div>
       <div class="header-actions">
         <button type="button" class="ghost-btn" id="resetBoardBtn">ボードを初期状態に戻す</button>
@@ -23,11 +23,11 @@
   </header>
 
   <div class="mobile-nav" aria-label="ページ内ナビゲーション">
+    <a href="#planner">逆算</a>
     <a href="#overview">全体像</a>
     <a href="#map">探索マップ</a>
-    <a href="#kanban">カンバン</a>
+    <a href="#kanban">かんばん</a>
     <a href="#gantt">ガント</a>
-    <a href="#issues">論点</a>
     <a href="#simulator">試算</a>
   </div>
 
@@ -35,204 +35,132 @@
     <aside class="side-nav">
       <div class="side-nav__title">PROJECT NAV</div>
       <nav aria-label="ページ内ナビゲーション">
-        <a href="#overview" data-nav="overview"><span>01</span>プロジェクト全体像</a>
-        <a href="#map" data-nav="map"><span>02</span>探索マップ</a>
-        <a href="#kanban" data-nav="kanban"><span>03</span>カンバン</a>
-        <a href="#gantt" data-nav="gantt"><span>04</span>ガント</a>
-        <a href="#issues" data-nav="issues"><span>05</span>検討論点</a>
+        <a href="#planner" data-nav="planner"><span>01</span>施行月から逆算</a>
+        <a href="#overview" data-nav="overview"><span>02</span>プロジェクト全体像</a>
+        <a href="#map" data-nav="map"><span>03</span>探索マップ</a>
+        <a href="#kanban" data-nav="kanban"><span>04</span>かんばん</a>
+        <a href="#gantt" data-nav="gantt"><span>05</span>全体ガント</a>
         <a href="#simulator" data-nav="simulator"><span>06</span>シミュレーション</a>
       </nav>
 
-      <div class="side-status" id="statusSummary">
-        <div class="status-label">現況サマリー</div>
+      <div class="side-status">
+        <div class="status-label">オープンタスク</div>
         <div class="status-number" id="openTaskCount">0</div>
         <div class="status-note" id="statusLine">未着手 0 ／ 進行中 0</div>
       </div>
 
-      <div class="side-card">
-        <div class="side-card__label">このプロトタイプでできること</div>
-        <ul class="mini-list">
-          <li>探索マップからタスクの背景を逆引き</li>
-          <li>カンバンで進捗をドラッグ操作</li>
-          <li>変更内容をガントへ即反映</li>
-          <li>ブラウザ内に状態を保存</li>
-        </ul>
-      </div>
-
-      <div class="side-card side-card--muted">
-        <div class="side-card__label">今はまだ未対応</div>
-        <ul class="mini-list">
-          <li>他メンバーとの同期</li>
-          <li>担当者ごとの履歴管理</li>
-          <li>権限分け</li>
-        </ul>
-      </div>
+      <a class="side-sim" href="simulator.html">別画面で試算する →</a>
     </aside>
 
     <main class="main">
-      <section id="overview" class="section hero-section" data-section="overview">
-        <div class="section-kicker">01 / OVERVIEW</div>
-        <div class="hero-grid">
+      <section id="planner" class="section hero-section" data-section="planner">
+        <div class="section-kicker">01 / REVERSE SCHEDULE</div>
+        <div class="section-head">
           <div>
-            <h2>まず、全体の流れを掴む</h2>
-            <p class="section-lead">この事業が何を目指し、いま何が未決で、どの作業を先に進めるべきかを、ひとつの画面で追えるようにします。</p>
-          </div>
-          <div class="hero-callout">
-            <div class="hero-callout__label">PROTOTYPE NOTE</div>
-            <p>今はブラウザ内にだけ保存する体験版です。あとでSupabaseに差し替える前提で、操作感を先に確認できます。</p>
+            <h2>施行月から全体スケジュールを逆算する</h2>
+            <p class="section-lead">目標の施行月を選ぶと、合意の期限、導入ステップ、社会保険料が下がるまでの流れを自動で逆算します。</p>
           </div>
         </div>
 
-        <div class="summary-grid">
-          <article class="summary-card">
-            <span class="summary-no">01</span>
-            <h3>探索マップで「なぜこのタスクか」が分かる</h3>
-            <p>目の前のタスクを、目的・論点・判断・施策から逆算して確認できます。</p>
-          </article>
-          <article class="summary-card">
-            <span class="summary-no">02</span>
-            <h3>カンバンで「今どこまで進んだか」が分かる</h3>
-            <p>Backlog から Done まで、進捗をドラッグ＆ドロップで更新できます。</p>
-          </article>
-          <article class="summary-card">
-            <span class="summary-no">03</span>
-            <h3>ガントで「いつまでに何をやるか」が分かる</h3>
-            <p>同じタスクデータから工程表を自動で描画し、優先順位を見直しやすくします。</p>
-          </article>
-          <article class="summary-card summary-card--accent">
-            <span class="summary-no">04</span>
-            <h3>シミュレータで「インパクト」をすぐに見られる</h3>
-            <p>提案に入る前に、数字の大きさと説明時の論点をその場で確認できます。</p>
-          </article>
+        <div class="planner-grid">
+          <div class="panel">
+            <div class="panel-heading compact">
+              <div><span class="panel-label">TARGET MONTH</span><h3>施行月を選ぶ</h3></div>
+            </div>
+            <div class="pick" id="plannerPick"></div>
+            <div class="result" id="plannerResult">─</div>
+
+            <div class="summary-mini-grid">
+              <div class="mini-box"><span>合意の期限</span><b id="summaryAgreement">─</b></div>
+              <div class="mini-box"><span>新しい保険料が適用</span><b id="summaryApply">─</b></div>
+              <div class="mini-box"><span>会社のCF実現</span><b id="summaryCash">─</b></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-heading compact">
+              <div><span class="panel-label">MILESTONES</span><h3>逆算ステップ</h3></div>
+            </div>
+            <div id="plannerSteps"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="overview" class="section" data-section="overview">
+        <div class="section-kicker">02 / OVERVIEW</div>
+        <div class="section-head">
+          <div>
+            <h2>プロジェクトの全体像</h2>
+            <p class="section-lead">第1号案件を起点に、何を目指し、どう広げ、何を検証するかを先に揃えます。</p>
+          </div>
         </div>
 
-        <div class="overview-grid">
-          <article class="panel">
-            <div class="panel-heading">
-              <div>
-                <span class="panel-label">FLOW</span>
-                <h3>今回の画面構成</h3>
-              </div>
-            </div>
-            <div class="flow flow--compact">
-              <div class="flow-item"><span>1</span><div><b>探索マップ</b><p>タスクの上位概念をたどる</p></div></div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-item"><span>2</span><div><b>カンバン</b><p>現在の状態を更新する</p></div></div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-item"><span>3</span><div><b>ガント</b><p>期限と並行進行を確認する</p></div></div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-item"><span>4</span><div><b>シミュレータ</b><p>試算とインパクトを確認する</p></div></div>
-            </div>
-          </article>
+        <div class="summary-grid overview-summary">
+          <article class="summary-card"><span class="summary-no">01</span><h3>目的</h3><p>企業型DCを入口に、法人との継続取引をつくる。制度導入を単発で終わらせず、継続的な金融コンサル関係の入口として設計する。</p></article>
+          <article class="summary-card"><span class="summary-no">02</span><h3>第1号の前提</h3><p>2027年3月に第1号を施行する。9月合意・標準6か月で逆算し、翌月払いの会社なら3月施行が定時決定に最も効率よく乗る。</p></article>
+          <article class="summary-card"><span class="summary-no">03</span><h3>再現性</h3><p>同じ形で他社に展開できる状態にする。個別対応で終わらせず、中期目標はアプローチ先10件。</p></article>
+          <article class="summary-card summary-card--accent"><span class="summary-no">04</span><h3>第1段階の意味</h3><p>既存の顧問先で実運用の負荷、投入工数、顧客の反応を実測する。第1段階は「稼ぐため」ではなく「測るため」。</p></article>
+        </div>
 
-          <article class="panel">
-            <div class="panel-heading">
-              <div>
-                <span class="panel-label">TRY FIRST</span>
-                <h3>最初に試してほしい操作</h3>
-              </div>
-            </div>
-            <ol class="ordered-list">
-              <li>探索マップで「宿泊・観光業以外のターゲット業界を決める」を選ぶ</li>
-              <li>右側パネルで、どの上位論点から発生しているかを確認する</li>
-              <li>同じタスクをカンバンで <strong>To Do → Doing</strong> に動かす</li>
-              <li>下のガントで、そのタスクが進行中表示になることを確認する</li>
-            </ol>
-          </article>
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-heading compact"><div><span class="panel-label">3 STAGES</span><h3>展開は3段階で進める</h3></div></div>
+            <div class="scroll-table"><table>
+              <tr><th>段階</th><th>対象</th><th>目的</th></tr>
+              <tr><td>第1段階</td><td>既存の顧問先</td><td>実運用の負荷、投入工数、顧客の反応を実測する</td></tr>
+              <tr><td>第2段階</td><td>ダイレクトメールと会報誌からの新規開拓</td><td>面談の成立確度を上げ、導入までの期間を短くする</td></tr>
+              <tr><td>第3段階</td><td>説明会の参加者を含む広い層</td><td>個別面談へ移行し、案件化する</td></tr>
+            </table></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-heading compact"><div><span class="panel-label">3 TRACKS</span><h3>3つの並行トラック</h3></div></div>
+            <div class="scroll-table"><table>
+              <tr><th>トラック</th><th>時期</th><th>やること</th><th>判断の期限</th></tr>
+              <tr><td><b>自社の準備</b></td><td>8〜10月</td><td>報酬設計の決定、試算表の作成、説明会ルールの文書化、体制づくり</td><td>9月上旬</td></tr>
+              <tr><td><b>営業</b></td><td>9月〜継続</td><td>DM発出（300〜500社）、10月中旬までに先行接触、本命2〜3社を選定</td><td>9月中にDM</td></tr>
+              <tr><td><b>第1号案件</b></td><td>9月〜翌3月</td><td>合意 → 規程整備 → 国の審査 → 説明会 → 施行</td><td>9月中に合意</td></tr>
+            </table></div>
+          </div>
         </div>
       </section>
 
       <section id="map" class="section" data-section="map">
-        <div class="section-kicker">02 / EXPLORATION MAP</div>
+        <div class="section-kicker">03 / EXPLORATION MAP</div>
         <div class="section-head">
           <div>
             <h2>探索マップ</h2>
-            <p class="section-lead">「今目の前にあるタスクは、どこから発生しているのか？」を目的から逆算して見える化します。</p>
+            <p class="section-lead">目的 → 分からないこと → 見立て → 確かめ方 → 今日やること、の流れで「今のタスクがどこから発生しているか」を見ます。</p>
           </div>
-          <div class="local-note">タスクまたはノードを選ぶと、関連経路がハイライトされます。</div>
         </div>
 
         <div class="map-layout">
           <div class="panel map-panel">
-            <div class="map-toolbar">
-              <button type="button" class="filter-btn is-active" data-map-filter="all">全体表示</button>
-              <button type="button" class="filter-btn" data-map-filter="focus">選択経路のみ</button>
-              <button type="button" class="filter-btn" id="clearSelectionBtn">選択解除</button>
-            </div>
-            <div class="map-grid" id="mapGrid">
-              <div class="map-column">
-                <div class="map-column__title">目的</div>
-                <button class="map-node" data-node-id="goal-business">事業を成立させる</button>
-              </div>
-              <div class="map-column">
-                <div class="map-column__title">戦略</div>
-                <button class="map-node" data-node-id="strategy-sales">営業戦略を決める</button>
-                <button class="map-node" data-node-id="strategy-revenue">収益設計を固める</button>
-              </div>
-              <div class="map-column">
-                <div class="map-column__title">論点</div>
-                <button class="map-node" data-node-id="issue-target">ターゲット業界を決める</button>
-                <button class="map-node" data-node-id="issue-pricing">料金体系を決める</button>
-                <button class="map-node" data-node-id="issue-compliance">説明責任と実務運用を固める</button>
-                <button class="map-node" data-node-id="issue-firstcase">第1号案件で何を測るか決める</button>
-              </div>
-              <div class="map-column">
-                <div class="map-column__title">判断・施策</div>
-                <button class="map-node" data-node-id="decision-hotel">宿泊・観光業を軸にする</button>
-                <button class="map-node" data-node-id="decision-otherindustry">宿泊・観光業以外を比較する</button>
-                <button class="map-node" data-node-id="decision-fixedprice">規模レンジ別の固定料金にする</button>
-                <button class="map-node" data-node-id="decision-measure">加入率・工数・質問を実測する</button>
-                <button class="map-node" data-node-id="decision-rule">説明会ルールを標準化する</button>
-              </div>
-              <div class="map-column">
-                <div class="map-column__title">今のタスク</div>
-                <button class="map-task" data-task-id="task-target-industry">宿泊・観光業以外のターゲット業界を決める</button>
-                <button class="map-task" data-task-id="task-deadline-rule">規約の承認申請の締切ルールを確定させる</button>
-                <button class="map-task" data-task-id="task-pricing-range">料金レンジの刻みと金額を決める</button>
-                <button class="map-task" data-task-id="task-measure-rate">第1段階で加入率を実測する</button>
-                <button class="map-task" data-task-id="task-stopcost">制度をやめるときの手続きと費用を確認する</button>
-                <button class="map-task" data-task-id="task-minwage">最低賃金の抵触チェックを手順にする</button>
-                <button class="map-task" data-task-id="task-srline">社労士法上の独占業務との線引きを確認する</button>
-                <button class="map-task" data-task-id="task-risktext">デメリット説明の標準文面をつくる</button>
-              </div>
-
-              <div class="map-link map-link--g1"></div>
-              <div class="map-link map-link--g2"></div>
-              <div class="map-link map-link--g3"></div>
-              <div class="map-link map-link--g4"></div>
-              <div class="map-link map-link--g5"></div>
-              <div class="map-link map-link--g6"></div>
-            </div>
+            <div class="map-grid" id="mapGrid"></div>
           </div>
-
           <aside class="panel detail-panel" id="detailPanel">
             <div class="detail-empty" id="detailEmpty">
               <div class="detail-empty__icon">◎</div>
-              <h3>ノードまたはタスクを選んでください</h3>
-              <p>探索マップ・カンバン・ガントは同じデータを見ています。どこから触っても、右側には同じ詳細が出ます。</p>
+              <h3>ノードまたはタスクを選択</h3>
+              <p>探索マップとかんばんは同じタスクを見ています。どちらを触っても右側に詳細を出します。</p>
             </div>
-
             <div class="detail-content hidden" id="detailContent">
               <div class="detail-badges" id="detailBadges"></div>
               <h3 id="detailTitle"></h3>
               <p class="detail-description" id="detailDescription"></p>
-
               <div class="detail-block">
-                <div class="detail-block__label">WHY THIS TASK?</div>
+                <div class="detail-block__label">逆算の経路</div>
                 <div class="crumbs" id="detailPath"></div>
               </div>
-
               <div class="detail-block">
                 <div class="detail-block__label">関連タスク</div>
-                <div class="detail-related" id="detailRelatedTasks"></div>
+                <div class="detail-related" id="detailRelated"></div>
               </div>
-
-              <div class="detail-block hidden" id="detailTaskMetaBlock">
-                <div class="detail-block__label">タスク操作</div>
-                <div class="detail-meta" id="detailTaskMeta"></div>
+              <div class="detail-block hidden" id="detailTaskActions">
+                <div class="detail-block__label">進捗変更</div>
                 <div class="status-actions">
-                  <button type="button" class="ghost-btn small" id="movePrevBtn">← 前のステータス</button>
-                  <button type="button" class="ghost-btn small" id="moveNextBtn">次のステータス →</button>
+                  <button type="button" class="ghost-btn small" id="movePrevBtn">← 前へ</button>
+                  <button type="button" class="ghost-btn small" id="moveNextBtn">次へ →</button>
                 </div>
               </div>
             </div>
@@ -241,134 +169,57 @@
       </section>
 
       <section id="kanban" class="section" data-section="kanban">
-        <div class="section-kicker">03 / KANBAN</div>
+        <div class="section-kicker">04 / KANBAN</div>
         <div class="section-head">
           <div>
             <h2>かんばん方式タスクボード</h2>
-            <p class="section-lead">カードをドラッグして進捗を更新します。スマートフォンではカードを選ぶと、右側の「前へ／次へ」でも変更できます。</p>
-          </div>
-          <div class="kanban-meta">
-            <span>保存先：このブラウザのみ</span>
-            <span>今後：Supabaseに差し替え予定</span>
+            <p class="section-lead">カードをドラッグして進捗を更新します。表示はコンパクトにし、カードにはタスク情報だけを載せています。</p>
           </div>
         </div>
-
         <div class="kanban-board" id="kanbanBoard">
           <section class="kanban-column" data-status="backlog">
-            <header class="kanban-column__head">
-              <div>
-                <h3>Backlog</h3>
-                <p>後で着手</p>
-              </div>
-              <span class="kanban-count" data-count-for="backlog">0</span>
-            </header>
+            <header class="kanban-column__head"><div><h3>Backlog</h3><p>後で着手</p></div><span class="kanban-count" data-count-for="backlog">0</span></header>
             <div class="kanban-dropzone" data-dropzone="backlog"></div>
           </section>
-
           <section class="kanban-column" data-status="todo">
-            <header class="kanban-column__head">
-              <div>
-                <h3>To Do</h3>
-                <p>次にやること</p>
-              </div>
-              <span class="kanban-count" data-count-for="todo">0</span>
-            </header>
+            <header class="kanban-column__head"><div><h3>To Do</h3><p>次にやる</p></div><span class="kanban-count" data-count-for="todo">0</span></header>
             <div class="kanban-dropzone" data-dropzone="todo"></div>
           </section>
-
           <section class="kanban-column" data-status="doing">
-            <header class="kanban-column__head">
-              <div>
-                <h3>Doing</h3>
-                <p>いま進行中</p>
-              </div>
-              <span class="kanban-count" data-count-for="doing">0</span>
-            </header>
+            <header class="kanban-column__head"><div><h3>Doing</h3><p>進行中</p></div><span class="kanban-count" data-count-for="doing">0</span></header>
             <div class="kanban-dropzone" data-dropzone="doing"></div>
           </section>
-
           <section class="kanban-column" data-status="review">
-            <header class="kanban-column__head">
-              <div>
-                <h3>Review</h3>
-                <p>確認待ち</p>
-              </div>
-              <span class="kanban-count" data-count-for="review">0</span>
-            </header>
+            <header class="kanban-column__head"><div><h3>Review</h3><p>確認待ち</p></div><span class="kanban-count" data-count-for="review">0</span></header>
             <div class="kanban-dropzone" data-dropzone="review"></div>
           </section>
-
           <section class="kanban-column" data-status="done">
-            <header class="kanban-column__head">
-              <div>
-                <h3>Done</h3>
-                <p>完了</p>
-              </div>
-              <span class="kanban-count" data-count-for="done">0</span>
-            </header>
+            <header class="kanban-column__head"><div><h3>Done</h3><p>完了</p></div><span class="kanban-count" data-count-for="done">0</span></header>
             <div class="kanban-dropzone" data-dropzone="done"></div>
           </section>
         </div>
       </section>
 
       <section id="gantt" class="section" data-section="gantt">
-        <div class="section-kicker">04 / MASTER SCHEDULE</div>
+        <div class="section-kicker">05 / MASTER SCHEDULE</div>
         <div class="section-head">
           <div>
-            <h2>全体ガントチャート</h2>
-            <p class="section-lead">探索マップと同じタスクデータから表示しています。色は現在の進捗を表します。</p>
-          </div>
-          <div class="gantt-status-legend">
-            <span><i class="legend-dot backlog"></i>Backlog</span>
-            <span><i class="legend-dot todo"></i>To Do</span>
-            <span><i class="legend-dot doing"></i>Doing</span>
-            <span><i class="legend-dot review"></i>Review</span>
-            <span><i class="legend-dot done"></i>Done</span>
+            <h2>全体ガント</h2>
+            <p class="section-lead">第1号案件を2026年9月合意・2027年3月施行と置いた場合の全体像です。自社、営業、導入、社会保険、キャッシュまでを横断して見ます。</p>
           </div>
         </div>
 
-        <div class="panel gantt-shell">
-          <div class="gantt-scroll" role="region" aria-label="横スクロール可能なガントチャート" tabindex="0">
-            <div id="ganttTable"></div>
+        <div class="panel gantt-panel">
+          <div class="gantt-scroll" role="region" aria-label="全体ガントチャート" tabindex="0">
+            <div class="gg" id="masterGantt"></div>
           </div>
-          <p class="gantt-help">カンバンで進捗を変えると、この表もすぐに更新されます。</p>
-        </div>
-      </section>
-
-      <section id="issues" class="section" data-section="issues">
-        <div class="section-kicker">05 / ISSUES</div>
-        <div class="section-head">
-          <div>
-            <h2>検討論点</h2>
-            <p class="section-lead">プロトタイプでは、よく参照しそうな論点を残しています。正式版ではここもSupabase管理にする想定です。</p>
+          <div class="glegend">
+            <span><i class="j"></i>自社</span>
+            <span><i class="u"></i>導入工程</span>
+            <span><i class="k"></i>社会保険の手続き</span>
+            <span><i class="c"></i>キャッシュ・収益</span>
+            <span><i class="h"></i>法令上の固定日</span>
           </div>
-        </div>
-
-        <div class="issue-grid">
-          <details class="issue-card issue-card--open" open>
-            <summary><span class="issue-no">01</span><div><b>宿泊・観光業以外のターゲットをどうするか</b><small>未決</small></div><span class="chev">＋</span></summary>
-            <div class="issue-content">
-              <p>宿泊・観光業を軸にしつつ、次にどの業界へ展開するかは未決です。従業員規模、給与水準、退職金ニーズ、採用難、人材定着、営業接点の作りやすさで比較する必要があります。</p>
-            </div>
-          </details>
-          <details class="issue-card issue-card--open" open>
-            <summary><span class="issue-no">02</span><div><b>規模レンジ別の固定料金の刻みをどう決めるか</b><small>進行中</small></div><span class="chev">＋</span></summary>
-            <div class="issue-content">
-              <p>固定料金にする方針は決まっています。残るのはレンジの階段の幅と各レンジの金額です。加入率と実務工数の実測値がないと根拠が弱いため、第1段階で測る必要があります。</p>
-            </div>
-          </details>
-          <details class="issue-card issue-card--open">
-            <summary><span class="issue-no">03</span><div><b>説明責任と実務線引きをどこまで標準化するか</b><small>未決</small></div><span class="chev">＋</span></summary>
-            <div class="issue-content">
-              <p>デメリット説明の標準文面、最低賃金チェック、社労士法上の線引き、制度廃止時の説明など、説明と実務の境界を整理する必要があります。</p>
-            </div>
-          </details>
-          <details class="issue-card issue-card--fixed">
-            <summary><span class="issue-no">04</span><div><b>個人向け営業を事業計画に入れるか</b><small>方針決定</small></div><span class="chev">＋</span></summary>
-            <div class="issue-content">
-              <p><b>入れない。</b>収益は顧問契約と法人保険で取り、従業員個人への営業を前提にしないことで、移行率を優先した判断ができます。</p>
-            </div>
-          </details>
         </div>
       </section>
 
@@ -376,17 +227,13 @@
         <div class="section-kicker">06 / SIMULATION</div>
         <div class="section-head">
           <div>
-            <h2>その場で試算する</h2>
-            <p class="section-lead">プロトタイプ段階でも、シミュレータは別ファイルで実際に操作できます。</p>
+            <h2>シミュレーション</h2>
+            <p class="section-lead">シミュレータは別ファイルをそのまま差し込んでいます。ページ内でも、別画面でも使えます。</p>
           </div>
-          <a class="primary-outline" href="simulator.html">別画面で大きく開く ↗</a>
+          <a class="primary-outline" href="simulator.html">別画面で開く ↗</a>
         </div>
-
         <div class="sim-frame-wrap">
-          <div class="sim-frame-bar">
-            <span>選択制DC シミュレータ</span>
-            <a href="simulator.html">フルスクリーンで開く →</a>
-          </div>
+          <div class="sim-frame-bar"><span>選択制DC シミュレータ</span><a href="simulator.html">フルスクリーンで開く →</a></div>
           <iframe src="simulator.html" title="選択制DC シミュレータ" loading="lazy"></iframe>
         </div>
       </section>
@@ -394,10 +241,10 @@
   </div>
 
   <footer class="footer">
-    <div>選択制DC 事業推進ダッシュボード ／ プロトタイプ</div>
-    <a href="#overview">ページ上部へ ↑</a>
+    <div>選択制DC 事業推進ダッシュボード ／ UI確認版</div>
+    <a href="#planner">ページ上部へ ↑</a>
   </footer>
 
-  <script src="app.js?v=proto-1"></script>
+  <script src="app.js?v=proto-2"></script>
 </body>
 </html>

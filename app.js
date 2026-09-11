@@ -4,13 +4,13 @@
 
   const STORAGE_KEY = "dc-dashboard-prototype-v2";
   const STATUS_ORDER = ["backlog", "todo", "doing", "review", "done"];
-  const STATUS_LABELS = { backlog:"Backlog", todo:"To Do", doing:"Doing", review:"Review", done:"Done" };
-  const LEVEL_LABELS = { goal:"目的", q:"分からないこと", h:"見立て", e:"確かめ方", t:"今日やること" };
+  const STATUS_LABELS = { backlog:"後で着手", todo:"未着手", doing:"進行中", review:"確認待ち", done:"完了" };
+  const LEVEL_LABELS = { goal:"目的", q:"検討課題", h:"仮説", e:"検証", t:"アクション" };
 
   const ym = (y,m) => y*12 + (m-1);
   const fromIdx = i => ({ y: Math.floor(i/12), m: i%12 + 1 });
   const fmt = o => `${o.y}年${o.m}月`;
-  const NOW = ym(2026,8);
+  const NOW = ym(new Date().getFullYear(),new Date().getMonth()+1);
   const OPTIONS = [[2027,1],[2027,2],[2027,3],[2027,4],[2027,5],[2027,6],[2027,9],[2027,12]];
   const STEPS = [
     [-6,"導入を決めて、書類と会社規程を出してもらう"],
@@ -91,340 +91,121 @@
     {l:"継続支援",w:"j",wt:"自社",b:[[7,15,"s","投資教育・フォロー・顧問提案"]]}
   ];
 
-  const nx = new Map(NODES.map(n => [n.id, n]));
-  const children = new Map();
-  NODES.forEach(n => children.set(n.id, []));
+  const TRACKS = [
+    {id:'preparation',title:'事業準備',icon:'01',period:'8〜10月',description:'報酬設計・試算・説明ルールを揃え、提案できる状態にする。',ids:['t1','t2','t3','t4','t8','t10','t11','t12','t13']},
+    {id:'sales',title:'営業・候補企業の開拓',icon:'02',period:'9月〜',description:'候補企業を絞り、DMと個別提案から最初の合意につなげる。',ids:['t5','t6','t7','t14']}
+  ];
+  const TODAY = new Date();
+  const TODAY_START = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+  const TASK_KEY = 'dc-dashboard-v3';
+  const $ = id => document.getElementById(id);
+  const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const nx = new Map(NODES.map(n => [n.id,n]));
+  const children = new Map(NODES.map(n => [n.id,[]]));
   NODES.forEach(n => (n.up || []).forEach(p => children.get(p)?.push(n.id)));
-
-  const navLinks = [...document.querySelectorAll('.side-nav [data-nav]')];
-  const sections = [...document.querySelectorAll('[data-section]')];
-
-  const state = {
-    selectedMonth: ym(2027,3),
-    selectedId: null,
-    tasks: loadTasks()
-  };
-
-  function loadTasks() {
-    const taskNodes = NODES.filter(n => n.L === 't').map(n => ({
-      id: n.id,
-      title: n.t,
-      description: n.nt,
-      due: n.due || '未設定',
-      up: [...(n.up || [])],
-      status: TASK_SEED[n.id]?.status || 'todo'
-    }));
+  const seedTasks = () => NODES.filter(n=>n.L==='t').map(n=>({id:n.id,title:n.t,description:n.nt,due:n.due,status:TASK_SEED[n.id]?.status || 'todo',track:TRACKS.find(t=>t.ids.includes(n.id))?.id || 'preparation'}));
+  function loadState(){
+    const base = {tasks:seedTasks(),updatedAt:null,selectedMonth:ym(2027,3),saveFailed:false};
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return taskNodes;
-      const saved = JSON.parse(raw);
-      if (!Array.isArray(saved)) return taskNodes;
-      return taskNodes.map(task => ({ ...task, ...(saved.find(s => s.id === task.id) || {}) }));
-    } catch {
-      return taskNodes;
-    }
+      const raw = localStorage.getItem(TASK_KEY) || localStorage.getItem(STORAGE_KEY);
+      if(!raw) return base;
+      const parsed = JSON.parse(raw), saved = Array.isArray(parsed) ? parsed : parsed?.tasks;
+      if(!Array.isArray(saved)) return base;
+      base.tasks.forEach(task=>{const row=saved.find(t=>t?.id===task.id);if(row && STATUS_ORDER.includes(row.status))task.status=row.status;});
+      base.updatedAt=typeof parsed.updatedAt==='string' && !Number.isNaN(Date.parse(parsed.updatedAt)) ? parsed.updatedAt : null;
+      base.imported = Array.isArray(parsed) || parsed.imported === true;
+      if(OPTIONS.some(([y,m])=>ym(y,m)===parsed.selectedMonth))base.selectedMonth=parsed.selectedMonth;
+    } catch {base.storageWarning=true;}
+    return base;
   }
-
-  function saveTasks() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.tasks)); }
-  function getTask(id) { return state.tasks.find(t => t.id === id); }
-  function getNode(id) { return nx.get(id); }
-
-  function ancestors(id, acc = new Set()) {
-    const n = getNode(id);
-    (n?.up || []).forEach(p => { if (!acc.has(p)) { acc.add(p); ancestors(p, acc); } });
-    return acc;
+  const state = {...loadState(),selectedId:null,filter:'all',view:'overview'};
+  let toastTimer, returnFocus;
+  function notify(message){$('toast').textContent=message;$('toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('visible'),3000);}
+  function persist(){
+    try {localStorage.setItem(TASK_KEY,JSON.stringify({tasks:state.tasks.map(({id,status})=>({id,status})),updatedAt:state.updatedAt,selectedMonth:state.selectedMonth,imported:!!state.imported}));state.saveFailed=false;return true;}
+    catch {state.saveFailed=true;return false;}
   }
-  function descendants(id, acc = new Set()) {
-    (children.get(id) || []).forEach(c => { if (!acc.has(c)) { acc.add(c); descendants(c, acc); } });
-    return acc;
+  const taskById = id => state.tasks.find(t=>t.id===id);
+  const trackById = id => TRACKS.find(t=>t.id===id);
+  function dueBoundary(task){const month=Number(task.due.match(/(\d+)月/)?.[1]);if(!month)return Infinity;return task.due.includes('上旬') ? new Date(2026,month-1,10).getTime() : new Date(2026,month,0).getTime();}
+  const overdue = task => task.status !== 'done' && dueBoundary(task) < TODAY_START;
+  function priorityTasks(tasks=state.tasks){const rank={review:0,doing:1,todo:2,backlog:3,done:4};return tasks.filter(t=>t.status!=='done').sort((a,b)=>dueBoundary(a)-dueBoundary(b) || rank[a.status]-rank[b.status] || Number(a.id.slice(1))-Number(b.id.slice(1)));}
+  function ancestors(id,seen=new Set()){(nx.get(id)?.up||[]).forEach(p=>{if(!seen.has(p)){seen.add(p);ancestors(p,seen);}});return seen;}
+  function descendants(id,seen=new Set()){(children.get(id)||[]).forEach(c=>{if(!seen.has(c)){seen.add(c);descendants(c,seen);}});return seen;}
+  function statusPill(status){return `<span class="pill ${status}">${STATUS_LABELS[status]}</span>`;}
+  function dueLabel(task){return `<span class="${overdue(task)?'due-alert':''}">${task.due}${overdue(task)?' · 期限超過':''}</span>`;}
+  function renderOverview(){
+    const done=state.tasks.filter(t=>t.status==='done').length,total=state.tasks.length;
+    const active=state.tasks.filter(t=>['doing','review'].includes(t.status)).length;
+    const late=state.tasks.filter(overdue).length,pct=Math.round(done/total*100);
+    $('navTaskCount').textContent=total-done;
+    $('metrics').innerHTML=`<article class="metric"><div class="metric-label">登録タスクの完了<span>${pct}%</span></div><div class="metric-value">${done}<span class="slash-count"> / ${total}</span><small>件</small></div><div class="progress" role="progressbar" aria-label="登録タスクの完了率" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><span style="width:${pct}%"></span></div></article><article class="metric"><div class="metric-label">進行中・確認待ち</div><div class="metric-value">${active}<small>件</small></div><p class="metric-note">進行中 ${state.tasks.filter(t=>t.status==='doing').length} · 確認待ち ${state.tasks.filter(t=>t.status==='review').length}</p></article><article class="metric ${late?'alert':''}"><div class="metric-label">期限を過ぎた未完了<b>要確認</b></div><div class="metric-value">${late}<small>件</small></div><p class="metric-note">${late?'期日の見直し・完了確認が必要':'期限超過のタスクはありません'}</p></article><article class="metric"><div class="metric-label">次の節目 · 導入合意</div><div class="metric-value date-value">2026.09<small>月中</small></div><p class="metric-note">合意実績は未登録</p></article>`;
+    const stages=[{title:'準備・合意',time:'2026.08 — 09',start:ym(2026,8),end:ym(2026,9)},{title:'導入手続き',time:'2026.10 — 2027.02',start:ym(2026,10),end:ym(2027,2)},{title:'第1号施行',time:'2027.03',start:ym(2027,3),end:ym(2027,3)},{title:'検証・継続支援',time:'2027.04 —',start:ym(2027,4),end:Infinity}];
+    $('journey').innerHTML=stages.map((s,i)=>{const current=NOW>=s.start&&NOW<=s.end;return `<div class="journey-step ${current?'current':''}"><span class="step-number">${String(i+1).padStart(2,'0')}</span><h3>${s.title}</h3><p>${s.time}</p><small>${current?'計画上の現在地':NOW>s.end?'実績未登録':'予定'}</small></div>`;}).join('');
+    const next=priorityTasks().slice(0,3);
+    $('nextCount').textContent=`${next.length}件`;
+    $('nextActions').innerHTML=next.length?next.map((t,i)=>`<button class="action-row" data-task="${t.id}"><span class="action-number">${i+1}</span><span class="action-body"><span class="action-title">${escapeHTML(t.title)}</span><span class="action-meta">${statusPill(t.status)}${dueLabel(t)}</span></span><span class="action-arrow" aria-hidden="true">↗</span></button>`).join(''):'<div class="empty-state">登録タスクはすべて完了しています。<br>次の工程の計画を確認しましょう。</div>';
+    $('trackCards').innerHTML=TRACKS.map(track=>{const tasks=state.tasks.filter(t=>t.track===track.id),count=tasks.filter(t=>t.status==='done').length,nextTask=priorityTasks(tasks)[0];return `<article class="track-card ${track.id}"><div class="track-heading"><span class="track-icon">${track.icon}</span><h3>${track.title}</h3><small>${track.period}</small></div><p class="track-description">${track.description}</p><div class="track-count"><span>登録タスクの完了</span><strong>${count}<span> / ${tasks.length}</span></strong></div><div class="progress" role="progressbar" aria-label="${track.title}のタスク完了率" aria-valuenow="${Math.round(count/tasks.length*100)}" aria-valuemin="0" aria-valuemax="100"><span style="width:${count/tasks.length*100}%"></span></div><div class="track-next"><small>次に進めること</small>${nextTask?`<button data-task="${nextTask.id}">${escapeHTML(nextTask.title)} <span aria-hidden="true">↗</span></button>`:'登録タスクはすべて完了'}<a class="text-link" href="#tasks" data-track-link="${track.id}">関連タスクを見る →</a></div></article>`;}).join('')+`<article class="track-card delivery"><div class="track-heading"><span class="track-icon">03</span><h3>第1号案件の導入</h3><small>9月〜翌3月</small></div><p class="track-description">合意から規程整備・審査・説明会を経て、制度をスタートする。</p><div class="track-count"><span>実績の登録状況</span><strong style="font-size:.9375rem">進捗未登録</strong></div><div class="progress"></div><div class="track-next"><small>次の節目</small>9月中に導入合意<a class="text-link" href="#schedule">導入の計画を確認 →</a></div></article>`;
+    const changed=state.updatedAt||state.imported;
+    $('dataMode').textContent=changed?'更新した進捗':'サンプル進捗';
+    $('dataDescription').textContent=changed?(state.updatedAt?`最終更新 ${new Date(state.updatedAt).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})} · このブラウザの進捗を反映`:'このブラウザに保存されていた進捗を引き継いでいます。'):'提供ファイルの初期状態を表示しています。進捗を更新して使えます。';
+    $('saveLabel').textContent=state.saveFailed?'未保存 · この画面のみ反映':'このブラウザに保存';
+    $('saveLabel').classList.toggle('due-alert',state.saveFailed);
   }
-  function lineage(id) {
-    const set = new Set([id]);
-    ancestors(id).forEach(x => set.add(x));
-    descendants(id).forEach(x => set.add(x));
-    return set;
+  function renderBoard(){
+    const filtered=state.tasks.filter(t=>state.filter==='all'||t.track===state.filter);
+    $('kanbanBoard').innerHTML=STATUS_ORDER.map(status=>{const tasks=filtered.filter(t=>t.status===status);return `<section class="kanban-column" data-status="${status}" aria-label="${STATUS_LABELS[status]}"><h2 class="kanban-head">${STATUS_LABELS[status]}<span>${tasks.length}</span></h2><div class="dropzone" data-dropzone="${status}">${tasks.length?tasks.map(t=>`<button class="task-card" draggable="true" data-task="${t.id}"><span class="task-category">${trackById(t.track).title}</span><strong>${escapeHTML(t.title)}</strong><span class="task-meta">${dueLabel(t)}<span class="task-id">${t.id.toUpperCase()}</span></span></button>`).join(''):'<div class="empty-state">タスクはありません</div>'}</div></section>`;}).join('');
+    document.querySelectorAll('[data-track]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.track===state.filter)));
   }
-  function depth(id, seen = new Set()) {
-    if (seen.has(id)) return 0;
-    seen.add(id);
-    const n = getNode(id);
-    if (!n?.up?.length) return 0;
-    return 1 + Math.max(...n.up.map(p => depth(p, new Set(seen))));
+  function renderMap(){
+    const active=state.selectedId?new Set([state.selectedId,...ancestors(state.selectedId),...descendants(state.selectedId)]):null;
+    $('mapGrid').innerHTML=LAYERS.map(l=>`<div class="map-col"><h2 class="map-col-title">${LEVEL_LABELS[l.key]}</h2>${NODES.filter(n=>n.L===l.key).map(n=>`<button class="map-node ${state.selectedId===n.id?'is-active':''} ${active&&!active.has(n.id)?'is-dim':''}" data-node="${n.id}" data-level="${n.L}" aria-pressed="${state.selectedId===n.id}">${n.cd?`<small>${escapeHTML(n.cd)}</small>`:''}${escapeHTML(n.t)}${n.L==='t'?statusPill(taskById(n.id).status):''}</button>`).join('')}</div>`).join('');
   }
-
-  function bindNavHighlight() {
-    if ('IntersectionObserver' in window) {
-      const observer = new IntersectionObserver(entries => {
-        const visible = entries.filter(e => e.isIntersecting).sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (!visible) return;
-        const id = visible.target.dataset.section;
-        navLinks.forEach(link => link.classList.toggle('is-active', link.dataset.nav === id));
-      }, { rootMargin: '-18% 0px -68% 0px', threshold: [0,.1,.25,.5] });
-      sections.forEach(section => observer.observe(section));
-    } else if (navLinks[0]) navLinks[0].classList.add('is-active');
+  function renderDetail(){
+    const node=nx.get(state.selectedId);if(!node)return;
+    const task=taskById(node.id);
+    const chain=[...ancestors(node.id)].map(id=>nx.get(id)).sort((a,b)=>LAYERS.findIndex(l=>l.key===a.L)-LAYERS.findIndex(l=>l.key===b.L));
+    const related=[...descendants(node.id)].map(taskById).filter(Boolean);
+    $('detailBody').innerHTML=`<div>${task?statusPill(task.status):`<span class="outline-pill">${LEVEL_LABELS[node.L]}</span>`}</div><h2 id="detailTitle">${escapeHTML(node.t)}</h2><p class="detail-description">${escapeHTML(node.nt)}</p>${task?`<div class="detail-meta"><div><span class="meta-label">取り組み</span><span>${trackById(task.track).title}</span></div><div><span class="meta-label">期限</span><span>2026年 ${dueLabel(task)}</span></div><div><span class="meta-label">担当者</span><span>未設定</span></div><div><label for="taskStatus">進捗</label><select id="taskStatus">${STATUS_ORDER.map(s=>`<option value="${s}" ${s===task.status?'selected':''}>${STATUS_LABELS[s]}</option>`).join('')}</select></div></div><div class="detail-actions">${task.status!=='done'?`<button class="button primary" data-complete="${task.id}">完了にする ✓</button>`:'<span class="pill done">完了済み</span>'}<a class="button secondary" href="simulator.html">試算を開く ↗</a></div>`:''}${chain.length?`<div class="detail-section"><h3>この取り組みにつながる背景</h3>${chain.map(n=>`<div class="context-item"><small>${LEVEL_LABELS[n.L]}</small>${escapeHTML(n.t)}</div>`).join('')}</div>`:''}${related.length?`<div class="detail-section"><h3>関連タスク <span class="count-badge">${related.length}</span></h3>${related.map(t=>`<button class="detail-task" data-task="${t.id}">${escapeHTML(t.title)}${statusPill(t.status)}</button>`).join('')}</div>`:''}<p class="footnote">背景には提供資料の仮説・前提を含みます。</p>`;
   }
-
-  function nextSept(idx) { const o = fromIdx(idx); return ym(o.m > 6 ? o.y + 1 : o.y, 9); }
-  function renderPlanner() {
-    const pick = document.getElementById('plannerPick');
-    pick.innerHTML = '';
-    OPTIONS.forEach(([y,m]) => {
-      const val = ym(y,m);
-      const btn = document.createElement('button');
-      btn.className = 'pk';
-      btn.type = 'button';
-      btn.setAttribute('aria-pressed', String(val === state.selectedMonth));
-      btn.textContent = fmt({y,m});
-      btn.addEventListener('click', () => { state.selectedMonth = val; renderPlanner(); });
-      pick.appendChild(btn);
-    });
-
-    const chosen = state.selectedMonth;
-    const start = chosen - 6;
-    const slack = start - NOW;
-    const result = document.getElementById('plannerResult');
-    if (slack < 0) {
-      result.className = 'result no';
-      result.textContent = `間に合いません。導入の合意は ${fmt(fromIdx(start))} が期限でした。`;
-    } else if (slack === 0) {
-      result.className = 'result tight';
-      result.textContent = '今月中に合意が必要です。余裕はありません。';
-    } else if (slack <= 1) {
-      result.className = 'result tight';
-      result.textContent = `合意の期限まであと ${slack}か月。急いでください。`;
-    } else {
-      result.className = 'result go';
-      result.textContent = `間に合います。合意の期限まであと ${slack}か月。`;
-    }
-
-    const first = chosen + 1;
-    const apply = nextSept(first);
-    const cash = apply + 1;
-    document.getElementById('summaryAgreement').textContent = fmt(fromIdx(start));
-    document.getElementById('summaryApply').textContent = fmt(fromIdx(apply));
-    document.getElementById('summaryCash').textContent = fmt(fromIdx(cash));
-
-    let h = '<table class="steps-table"><tr><th>時期</th><th>やること</th></tr>';
-    STEPS.forEach(([off,txt]) => {
-      const idx = chosen + off;
-      const past = idx < NOW;
-      h += `<tr class="${past ? 'past' : ''}"><td><b>${fmt(fromIdx(idx))}</b></td><td>${txt}${past ? '（期限を過ぎています）' : ''}</td></tr>`;
-    });
-    h += `<tr><td><b>${fmt(fromIdx(first))}</b></td><td>下がった給与が初めて支払われる（翌月払いの場合）</td></tr>`;
-    h += `<tr><td><b>${fmt(fromIdx(apply))}</b></td><td>新しい社会保険料が適用される</td></tr>`;
-    h += `<tr><td><b>${fmt(fromIdx(cash))}</b></td><td><b>会社が納める金額が実際に減る</b></td></tr>`;
-    h += '</table>';
-    const fm = fromIdx(first).m;
-    h += `<p class="steps-note">${fm <= 4 ? '下がった給与が4月までに支払われるので、4〜6月の平均にきちんと反映されます。' : `下がった給与が${fm}月からになるため、その年の4〜6月には間に合いません。新しい保険料が適用されるのは翌年になります。`}</p>`;
-    document.getElementById('plannerSteps').innerHTML = h;
+  function openDetail(id){if(!nx.has(id))return;if(!$('detailDialog').open)returnFocus=document.activeElement;state.selectedId=id;renderMap();renderDetail();if(!$('detailDialog').open)$('detailDialog').showModal();}
+  function closeDetail(){const d=$('detailDialog');if(d.open)d.close();}
+  function updateTask(id,status){const t=taskById(id);if(!t||!STATUS_ORDER.includes(status)||t.status===status)return;t.status=status;state.updatedAt=new Date().toISOString();const saved=persist();const focusId=document.activeElement?.id;renderAll();if($('detailDialog').open){renderDetail();if(focusId&&$(focusId))$(focusId).focus();}notify(saved?`「${STATUS_LABELS[status]}」に更新しました`:'進捗を更新しましたが、ブラウザに保存できませんでした');}
+  function renderPlanner(){
+    $('plannerMonth').innerHTML=OPTIONS.map(([y,m])=>`<option value="${ym(y,m)}" ${state.selectedMonth===ym(y,m)?'selected':''}>${y}年${m}月</option>`).join('');
+    const chosen=state.selectedMonth,start=chosen-6,slack=start-NOW;
+    $('plannerResult').className=`planner-result ${slack<=1?'warning':''}`;
+    $('plannerResult').textContent=slack<0?`標準6か月では、${fmt(fromIdx(start))}の合意を想定する日程です。工程の見直しが必要です。`:slack===0?'標準6か月で進めるには、今月中の導入合意が必要です。':`標準6か月では、合意の目安まであと${slack}か月です。`;
+    const first=chosen+1,o=fromIdx(first),apply=ym(o.m>6?o.y+1:o.y,9);
+    $('plannerSummaries').innerHTML=`<div><span>導入合意の目安</span><strong>${fmt(fromIdx(start))}</strong></div><div><span>新保険料適用の想定</span><strong>${fmt(fromIdx(apply))}</strong></div><div><span>会社のCF実現の想定</span><strong>${fmt(fromIdx(apply+1))}</strong></div><p class="footnote">${o.m<=4?'4〜6月の算定対象期間全体への反映を想定。':o.m<=6?'4〜6月の一部への反映を想定。削減額は対象月数により変わります。':'初回給与が7月以降のため、翌年の定時決定を想定。'}</p>`;
+    $('plannerSteps').innerHTML=STEPS.map(([off,title])=>{const month=chosen+off;return `<div class="planner-step ${month<NOW?'past':''}"><time>${fromIdx(month).y}.${String(fromIdx(month).m).padStart(2,'0')}</time><span>${escapeHTML(title)}</span></div>`;}).join('');
   }
-
-  function renderMap() {
-    const grid = document.getElementById('mapGrid');
-    grid.innerHTML = '';
-    const active = state.selectedId ? lineage(state.selectedId) : null;
-
-    LAYERS.forEach(layer => {
-      const col = document.createElement('div');
-      col.className = 'map-col';
-      col.innerHTML = `<div class="map-col__title">${layer.name}</div>`;
-      NODES.filter(n => n.L === layer.key).forEach(node => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'map-node';
-        btn.dataset.id = node.id;
-        btn.dataset.level = node.L;
-        btn.innerHTML = `${node.cd ? `<small>${node.cd}</small>` : ''}${node.t}`;
-        if (state.selectedId === node.id) btn.classList.add('is-active');
-        if (active && !active.has(node.id)) btn.classList.add('is-dim');
-        btn.addEventListener('click', () => { state.selectedId = node.id; renderAll(); });
-        col.appendChild(btn);
-      });
-      grid.appendChild(col);
-    });
+  function renderGantt(){
+    let h='<div class="gh gl" style="grid-row:1;grid-column:1">取り組み / 予定</div>';
+    MONTHS.forEach((m,i)=>{const now=ym(m.y,m.m)===NOW;h+=`<div class="gh ${now?'now':''}" style="grid-row:1;grid-column:${i+2}">${i===0||m.m===1?`<span class="year">${m.y}</span>`:''}${m.l}${now?' · 今月':''}</div>`;});
+    GANTT_ROWS.forEach((r,ri)=>{const row=ri+2;h+=`<div class="gl" style="grid-row:${row};grid-column:1">${r.l}</div>`;MONTHS.forEach((m,i)=>h+=`<div class="gc ${ym(m.y,m.m)===NOW?'now':''}" style="grid-row:${row};grid-column:${i+2}"></div>`);(r.b||[]).forEach(([s,e,c,t])=>h+=`<div class="gbar ${c}" title="${escapeHTML(t)}" style="grid-row:${row};grid-column:${s+2}/${e+2}">${escapeHTML(t)}</div>`);(r.f||[]).forEach(([c,t])=>h+=`<div class="gflag" style="grid-row:${row};grid-column:${c+2}">${escapeHTML(t)}</div>`);});
+    $('masterGantt').innerHTML=h;
   }
-
-  function nodePath(id) {
-    const current = getNode(id);
-    if (!current) return [];
-    const parentChain = [...ancestors(id)].map(getNode).filter(Boolean).sort((a,b) => depth(a.id) - depth(b.id));
-    const out = [];
-    const seen = new Set();
-    [...parentChain, current].forEach(n => {
-      if (!seen.has(n.id)) { out.push(n); seen.add(n.id); }
-    });
-    return out;
-  }
-
-  function relatedTaskIds(nodeId) {
-    return [...descendants(nodeId)].filter(id => getNode(id)?.L === 't');
-  }
-
-  function renderDetail() {
-    const empty = document.getElementById('detailEmpty');
-    const content = document.getElementById('detailContent');
-    const badges = document.getElementById('detailBadges');
-    const title = document.getElementById('detailTitle');
-    const desc = document.getElementById('detailDescription');
-    const path = document.getElementById('detailPath');
-    const related = document.getElementById('detailRelated');
-    const actions = document.getElementById('detailTaskActions');
-
-    if (!state.selectedId) {
-      empty.classList.remove('hidden');
-      content.classList.add('hidden');
-      return;
-    }
-    empty.classList.add('hidden');
-    content.classList.remove('hidden');
-
-    const node = getNode(state.selectedId);
-    if (!node) return;
-    title.textContent = node.t;
-    desc.textContent = node.nt || '';
-    badges.innerHTML = `<span class="badge type">${LEVEL_LABELS[node.L]}</span>`;
-    const p = nodePath(node.id);
-    path.innerHTML = p.map(n => `<span class="crumb">${n.t}</span>`).join('');
-
-    let taskIds = [];
-    if (node.L === 't') {
-      const task = getTask(node.id);
-      badges.innerHTML += task ? ` <span class="badge status ${task.status}">${STATUS_LABELS[task.status]}</span>` : '';
-      taskIds = [node.id];
-      actions.classList.remove('hidden');
-      document.getElementById('movePrevBtn').disabled = !task || STATUS_ORDER.indexOf(task.status) === 0;
-      document.getElementById('moveNextBtn').disabled = !task || STATUS_ORDER.indexOf(task.status) === STATUS_ORDER.length - 1;
-    } else {
-      taskIds = relatedTaskIds(node.id);
-      actions.classList.add('hidden');
-    }
-
-    related.innerHTML = taskIds.length
-      ? taskIds.map(id => {
-          const t = getTask(id);
-          const n = getNode(id);
-          return `<button type="button" class="related-chip" data-task="${id}"><span>${n?.t || id}</span><small>${t ? STATUS_LABELS[t.status] : ''}</small></button>`;
-        }).join('')
-      : '<div class="empty-mini">関連タスクはありません。</div>';
-
-    related.querySelectorAll('[data-task]').forEach(btn => btn.addEventListener('click', () => { state.selectedId = btn.dataset.task; renderAll(); }));
-  }
-
-  function createTaskCard(task) {
-    const article = document.createElement('article');
-    article.className = 'task-card';
-    article.draggable = true;
-    article.dataset.taskId = task.id;
-    if (state.selectedId === task.id) article.classList.add('is-selected');
-    article.innerHTML = `
-      <div class="task-card__title">${task.title}</div>
-      <div class="task-card__meta">
-        <span class="task-card__due">期限：${task.due}</span>
-        <span class="status-pill ${task.status}">${STATUS_LABELS[task.status]}</span>
-      </div>`;
-    article.addEventListener('click', () => { state.selectedId = task.id; renderAll(); });
-    article.addEventListener('dragstart', event => {
-      event.dataTransfer.setData('text/plain', task.id);
-      event.dataTransfer.effectAllowed = 'move';
-    });
-    return article;
-  }
-
-  function renderKanban() {
-    STATUS_ORDER.forEach(status => {
-      const zone = document.querySelector(`[data-dropzone="${status}"]`);
-      const countEl = document.querySelector(`[data-count-for="${status}"]`);
-      const list = state.tasks.filter(t => t.status === status);
-      zone.innerHTML = '';
-      list.forEach(task => zone.appendChild(createTaskCard(task)));
-      countEl.textContent = String(list.length);
-    });
-  }
-
-  function renderStatusSummary() {
-    const counts = Object.fromEntries(STATUS_ORDER.map(s => [s, state.tasks.filter(t => t.status === s).length]));
-    const open = counts.backlog + counts.todo + counts.doing + counts.review;
-    document.getElementById('openTaskCount').textContent = String(open);
-    document.getElementById('statusLine').textContent = `未着手 ${counts.todo} ／ 進行中 ${counts.doing} ／ 確認中 ${counts.review}`;
-  }
-
-  function moveTask(taskId, status) {
-    const task = getTask(taskId);
-    if (!task || !STATUS_ORDER.includes(status)) return;
-    task.status = status;
-    saveTasks();
-    renderAll();
-  }
-
-  function moveSelected(direction) {
-    const task = getTask(state.selectedId);
-    if (!task) return;
-    const i = STATUS_ORDER.indexOf(task.status);
-    const ni = Math.max(0, Math.min(STATUS_ORDER.length - 1, i + direction));
-    if (ni !== i) moveTask(task.id, STATUS_ORDER[ni]);
-  }
-
-  function bindDnD() {
-    document.querySelectorAll('.kanban-dropzone').forEach(zone => {
-      zone.addEventListener('dragover', event => {
-        event.preventDefault();
-        zone.closest('.kanban-column')?.classList.add('is-over');
-      });
-      zone.addEventListener('dragleave', () => zone.closest('.kanban-column')?.classList.remove('is-over'));
-      zone.addEventListener('drop', event => {
-        event.preventDefault();
-        zone.closest('.kanban-column')?.classList.remove('is-over');
-        const taskId = event.dataTransfer.getData('text/plain');
-        moveTask(taskId, zone.dataset.dropzone);
-        state.selectedId = taskId;
-        renderAll();
-      });
-    });
-  }
-
-  function renderMasterGantt() {
-    let h = '<div class="gh corner" style="grid-row:1;grid-column:1">&nbsp;</div>';
-    MONTHS.forEach((m, i) => {
-      const c = m.now ? ' now' : (m.key ? ' key' : '');
-      const yr = (i === 0 || m.m === 1) ? `<div class="yr">${m.y}</div>` : '';
-      h += `<div class="gh${c}" style="grid-row:1;grid-column:${i+2}">${yr}${m.l}${m.now ? '<div>今</div>' : ''}</div>`;
-    });
-    GANTT_ROWS.forEach((r, ri) => {
-      const row = ri + 2;
-      h += `<div class="gl" style="grid-row:${row};grid-column:1"><span class="wb ${r.w}">${r.wt}</span>${r.l}</div>`;
-      for (let i=0;i<MONTHS.length;i++) {
-        const c = MONTHS[i].now ? ' now' : (MONTHS[i].key ? ' key' : '');
-        h += `<div class="gc${c}" style="grid-row:${row};grid-column:${i+2}"></div>`;
-      }
-      (r.b || []).forEach(([s,e,cls,txt]) => {
-        h += `<div class="gbar ${cls}" style="grid-row:${row};grid-column:${s+2} / ${e+2}">${txt}</div>`;
-      });
-      (r.f || []).forEach(([c, txt, k]) => {
-        h += `<div class="gflag ${k}" style="grid-row:${row};grid-column:${c+2}">${txt}</div>`;
-      });
-    });
-    document.getElementById('masterGantt').innerHTML = h;
-  }
-
-  function renderAll() {
-    renderPlanner();
-    renderMap();
-    renderDetail();
-    renderKanban();
-    renderStatusSummary();
-    renderMasterGantt();
-  }
-
-  document.getElementById('movePrevBtn').addEventListener('click', () => moveSelected(-1));
-  document.getElementById('moveNextBtn').addEventListener('click', () => moveSelected(1));
-  document.getElementById('resetBoardBtn').addEventListener('click', () => {
-    localStorage.removeItem(STORAGE_KEY);
-    state.tasks = loadTasks();
-    state.selectedId = null;
-    renderAll();
-  });
-
-  bindNavHighlight();
-  bindDnD();
-  renderAll();
+  function renderAll(){renderOverview();renderBoard();renderMap();renderPlanner();renderGantt();}
+  function route(){const aliases={planner:'schedule',gantt:'schedule',kanban:'tasks',simulator:'schedule'},hash=location.hash.slice(1),view=aliases[hash]||hash;state.view=['overview','tasks','schedule','map'].includes(view)?view:'overview';document.querySelectorAll('.view').forEach(el=>el.hidden=el.id!==`view-${state.view}`);document.querySelectorAll('[data-view]').forEach(el=>{const active=el.dataset.view===state.view;el.classList.toggle('is-active',active);if(active){el.setAttribute('aria-current','page');$('breadcrumb').textContent=el.textContent.replace(/\d+$/,'').trim();}else el.removeAttribute('aria-current');});document.title=`${({overview:'プロジェクトの現在地',tasks:'タスクボード',schedule:'スケジュール',map:'判断の背景'})[state.view]} | 選択制DC`;}
+  document.addEventListener('click',e=>{if(e.target.closest('.skip-link')){e.preventDefault();$('main').focus();$('main').scrollIntoView();return;}const task=e.target.closest('[data-task]'),node=e.target.closest('[data-node]'),complete=e.target.closest('[data-complete]'),filter=e.target.closest('[data-track]'),link=e.target.closest('[data-track-link]');if(task)openDetail(task.dataset.task);else if(node)openDetail(node.dataset.node);else if(complete)updateTask(complete.dataset.complete,'done');else if(filter){state.filter=filter.dataset.track;renderBoard();}else if(link){state.filter=link.dataset.trackLink;renderBoard();}});
+  $('detailDialog').addEventListener('change',e=>{if(e.target.id==='taskStatus')updateTask(state.selectedId,e.target.value);});
+  $('closeDetail').addEventListener('click',closeDetail);
+  $('detailDialog').addEventListener('click',e=>{if(e.target===$('detailDialog')){const box=e.target.getBoundingClientRect();if(e.clientX<box.left||e.clientX>box.right||e.clientY<box.top||e.clientY>box.bottom)closeDetail();}});
+  $('detailDialog').addEventListener('close',()=>{if(returnFocus?.isConnected&&!returnFocus.closest('[hidden]'))returnFocus.focus();else{const returnId=returnFocus?.dataset.task||returnFocus?.dataset.node||state.selectedId;const fallback=[...document.querySelectorAll(`[data-task="${returnId}"], [data-node="${returnId}"]`)].find(el=>!el.closest('[hidden]')&&!el.closest('dialog'));if(fallback)fallback.focus();else $('main').focus();}});
+  $('clearMap').addEventListener('click',()=>{state.selectedId=null;renderMap();});
+  $('plannerMonth').addEventListener('change',e=>{const value=Number(e.target.value);if(!OPTIONS.some(([y,m])=>ym(y,m)===value))return;state.selectedMonth=value;persist();renderPlanner();renderOverview();if(state.saveFailed)notify('比較条件を保存できませんでした');});
+  $('resetBoardBtn').addEventListener('click',()=>$('resetDialog').showModal());
+  $('cancelReset').addEventListener('click',()=>$('resetDialog').close());
+  $('confirmReset').addEventListener('click',()=>{state.tasks=seedTasks();state.updatedAt=null;state.imported=false;state.selectedId=null;const saved=persist();$('resetDialog').close();renderAll();notify(saved?'初期状態に戻しました':'初期状態に戻しましたが、保存できませんでした');});
+  $('kanbanBoard').addEventListener('dragstart',e=>{const card=e.target.closest('[data-task]');if(card){e.dataTransfer.setData('text/plain',card.dataset.task);e.dataTransfer.effectAllowed='move';}});
+  $('kanbanBoard').addEventListener('dragover',e=>{const col=e.target.closest('[data-status]');if(col){e.preventDefault();e.dataTransfer.dropEffect='move';col.classList.add('is-over');}});
+  $('kanbanBoard').addEventListener('dragleave',e=>{const col=e.target.closest('[data-status]');if(col&&!col.contains(e.relatedTarget))col.classList.remove('is-over');});
+  $('kanbanBoard').addEventListener('drop',e=>{const col=e.target.closest('[data-status]');if(!col)return;e.preventDefault();const id=e.dataTransfer.getData('text/plain');col.classList.remove('is-over');updateTask(id,col.dataset.status);});
+  $('kanbanBoard').addEventListener('dragend',()=>document.querySelectorAll('.is-over').forEach(el=>el.classList.remove('is-over')));
+  window.addEventListener('hashchange',()=>{closeDetail();route();window.scrollTo({top:0,behavior:'instant'});$('main').focus({preventScroll:true});});
+  window.addEventListener('storage',e=>{if(e.key===TASK_KEY){const incoming=loadState();Object.assign(state,incoming);renderAll();if($('detailDialog').open)renderDetail();}});
+  $('todayLabel').textContent=TODAY.toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit',weekday:'short'});
+  renderAll();route();
+  if(state.storageWarning)notify('保存データを読み込めなかったため、初期状態を表示しています');
 })();

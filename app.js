@@ -35,42 +35,59 @@
     {id:"g2", L:"goal", cd:"第1号", t:"2027年3月に第1号を施行する", nt:"9月合意・標準6か月で逆算。翌月払いの会社なら3月施行が定時決定に最も効率よく乗る。", up:["g1"]},
     {id:"g3", L:"goal", cd:"再現性", t:"同じ形で他社に展開できる状態にする", nt:"個別対応で終わらせない。中期目標はアプローチ先10件。", up:["g1"]},
 
-    {id:"q1", L:"q", cd:"Q1 収益", t:"どの報酬設計を採るか", nt:"削減額連動・階段型定額・3層構造の3案。成果報酬だけだと53名未満は赤字。", up:["g1","g3"]},
-    {id:"q3", L:"q", cd:"Q3 対象", t:"どの規模・どの層に提案するか", nt:"53名が損益分岐。役員は税メリットが大きく、中間層は会社の削減効率が高い。", up:["g2","g3"]},
+    {id:"q1", L:"q", cd:"Q1 収益", t:"固定料金の水準と、研修の扱いをどう決めるか", nt:"9/8に規模レンジ別の固定料金で確定（削減額連動の成果報酬は不採用）。残る論点は金額水準と、研修を料金に含めるか別建てにするか。", up:["g1","g3"]},
+    {id:"q3", L:"q", cd:"Q3 対象", t:"どの規模・どの層に提案するか", nt:"50名が一つの基準。50名以上は導入単体で採算、50名未満は顧問契約への入口。八十二DCも50名以上（または会社拠出30万円/月以上）のみが対象。", up:["g2","g3"]},
     {id:"q5", L:"q", cd:"Q5 リスク", t:"説明責任と保険営業をどう両立させるか", nt:"給付影響の説明は事業主の義務。個別営業は収益源だが利益相反を生む。", up:["g1"]},
-    {id:"q6", L:"q", cd:"Q6 資金", t:"入金まで13か月をどう持ちこたえるか", nt:"合意から会社のCF実現まで13か月。10社並行なら数百万円の人件費が先行する。", up:["g3"]},
+    {id:"q6", L:"q", cd:"Q6 資金", t:"請求までの先行工数をどう持ちこたえるか", nt:"固定料金になり、請求は会社のCF実現（合意から13か月）と切り離された。ただし合意から施行までの約6か月は自社工数が先行する。", up:["g3"]},
 
-    {id:"h1", L:"h", cd:"H1", t:"3層構造なら小規模でも黒字化する", nt:"導入支援フィー＋成果報酬＋継続支援。加入率が20%に落ちても黒字を保つ。", up:["q1","q6"]},
+    {id:"h1", L:"h", cd:"H1", t:"固定料金＋継続支援なら小規模でも成立する", nt:"50名未満は導入フィーを薄くし、年次説明会・JFC顧問契約・退職金上乗せで回収する。金額案は提示済み・未確定。", up:["q1","q6"]},
     {id:"h3", L:"h", cd:"H3", t:"既存の保険取引先が最初の1社になる", nt:"9月合意に間に合うのは、すでに関係がある先だけ。規程の開示も含めて話が早い。", up:["q3"]},
     {id:"h7", L:"h", cd:"H7", t:"投資教育を軸に月額収益化できる", nt:"義務として発生する教育を、有償の運用支援メニューに束ねる。", up:["q1"]},
-    {id:"h8", L:"h", cd:"H8", t:"宿泊・観光業を軸にしつつ次の業界候補を比較する", nt:"建設業や介護・福祉を固定せず、宿泊・観光業以外の候補を比較して優先順位を決める。", up:["q3"]},
+    {id:"h8", L:"h", cd:"H8", t:"製造業を主軸に、建設・宿泊を組み合わせる", nt:"製造は母数と給与水準で最有力。建設は経審の切り口があるが母数が小さく個別訪問向き。宿泊は県内資本で規模のある先が限られる。配分案は提示済み・承認待ち。", up:["q3"]},
+    {id:"h10", L:"h", cd:"H10", t:"設計から定着までの伴走が、価格差の根拠になる", nt:"SBIは説明会・投資教育がオプション。八十二は50名未満を扱わない。制度を入れて終わりにせず運用に乗せる点を差別化の軸にする。", up:["q1"]},
     {id:"h9", L:"h", cd:"H9", t:"説明会ルールを標準化しないと案件化後に止まる", nt:"説明責任、最低賃金、社労士との線引きを整えないと実務上の停止要因になる。", up:["q5"]},
 
     {id:"e1", L:"e", cd:"E1", t:"委託契約の報酬体系を確認する", nt:"導入時・継続それぞれの取り分を契約書と担当者への確認で明確にする。", up:["h1"]},
-    {id:"e4", L:"e", cd:"E4", t:"DMを発出し反応率を測る", nt:"300〜500社に発出、10月中旬までに先行接触。反応率から10件の達成可能性を判断する。", up:["h3"]},
+    {id:"e4", L:"e", cd:"E4", t:"DMを発出し反応率を測る", nt:"300社に発出（9月中〜10月上旬）。反応率1〜3%を想定。導入の直接獲得か説明会への集客か、目的を先に決める。", up:["h3"]},
     {id:"e6", L:"e", cd:"E6", t:"説明会と保険提案の運用ルールを整える", nt:"時間分離、同意書、記録方法、担当分離。コンプライアンス確認を通す。", up:["h9"]},
     {id:"e7", L:"e", cd:"E7", t:"第1号で実稼働時間を実測する", nt:"提案から施行までの自社工数を記録し、損益分岐の前提を確定させる。", up:["h7","h1"]},
     {id:"e8", L:"e", cd:"E8", t:"候補業界を比較し優先順位を決める", nt:"従業員規模、給与水準、退職金ニーズ、採用・定着課題、制度導入余力で比較する。", up:["h8"]},
 
+    {id:"e9", L:"e", cd:"E9", t:"営業資料を2段の営業フローで使える形にする", nt:"1段＝試算データを出してもらう、2段＝導入を決めてもらう。ダイジェスト版・試算版・チラシを揃える。", up:["h10"]},
+    {id:"e10", L:"e", cd:"E10", t:"運営管理機関と競合の条件を比較する", nt:"八十二・SBI・アクサ・FDCJの費用と対象規模を並べ、規模別の振り分けと価格の根拠にする。", up:["h10","h1"]},
+    {id:"e11", L:"e", cd:"E11", t:"11/30説明会で案件化の導線を検証する", nt:"50社想定。参加企業を個別提案につなげる流れを確かめる。", up:["h3","h8"]},
+
     {id:"t1", L:"t", t:"委託契約書の報酬条項を読む", nt:"導入時・継続の報酬条項を確認する。", up:["e1"], due:"8月中"},
     {id:"t2", L:"t", t:"代表事業主に収益条件を確認する", nt:"実際の受取条件を確認する。", up:["e1"], due:"8月中"},
-    {id:"t3", L:"t", t:"報酬3案を比較し1案に決める", nt:"削減額連動・階段型定額・3層構造の比較。", up:["e1"], due:"9月上旬"},
-    {id:"t4", L:"t", t:"10社想定の資金繰り表を作る", nt:"合意から入金まで13か月の先行負担を見積もる。", up:["h1"], due:"9月上旬"},
+    {id:"t3", L:"t", t:"報酬3案を比較し1案に決める", nt:"9/8の戦略会議で、規模レンジ別の固定料金に決定。", up:["e1"], due:"9月上旬"},
+    {id:"t4", L:"t", t:"10社想定の資金繰り表を作る", nt:"固定料金・導入後請求の前提で、合意から請求までの先行工数と入金時期を見積もる。", up:["h1"], due:"9月上旬"},
     {id:"t5", L:"t", t:"DM原稿の限度額の誤りを直す", nt:"2万3千円から6万2千円へ、という誤記を修正する。", up:["e4"], due:"8月中"},
-    {id:"t6", L:"t", t:"DMを作成し300〜500社に発出", nt:"9月中に送付し、先行接触へ進む。", up:["e4"], due:"9月中"},
+    {id:"t6", L:"t", t:"DMを300社に発送する", nt:"9月中〜10月上旬に送付し、先行接触へ進む。11/30説明会の集客から逆算した期限。", up:["e4"], due:"10月上旬"},
     {id:"t7", L:"t", t:"本命2〜3社を選定する", nt:"今から合意できる候補を絞る。", up:["e4"], due:"8月中"},
-    {id:"t8", L:"t", t:"等級ベースの試算表を作る", nt:"現在等級と積立後等級を突き合わせる。", up:["e7"], due:"9月上旬"},
+    {id:"t8", L:"t", t:"等級ベースの試算表を作る", nt:"シミュレータで対応済み。アクサ資料の試算と1円単位で一致を確認。", up:["e7"], due:"9月上旬"},
     {id:"t10", L:"t", t:"説明会ルールを文書化する", nt:"説明会と保険提案を分けるルールを整える。", up:["e6"], due:"9月中"},
     {id:"t11", L:"t", t:"会社向け同意書のひな形を作る", nt:"説明と同意の標準文書を用意する。", up:["e6"], due:"9月中"},
     {id:"t12", L:"t", t:"社労士の連携先を確保する", nt:"規程変更と説明監修の両方で必要。", up:["e6","e7"], due:"9月中"},
     {id:"t13", L:"t", t:"稼働時間の記録フォーマットを作る", nt:"第1号で工数を実測できるようにする。", up:["e7"], due:"9月中"},
-    {id:"t14", L:"t", t:"宿泊・観光業以外のターゲット業界を決める", nt:"次にどの業界へ展開するかを決める。", up:["e8"], due:"9月中"}
+    {id:"t14", L:"t", t:"宿泊・観光業以外のターゲット業界を決める", nt:"製造・建設・宿泊の3業種、製造主軸で提案済み。承認待ち。", up:["e8"], due:"9月中"},
+    {id:"t15", L:"t", t:"DMの目的と業種配分を確定する", nt:"導入の直接獲得か、説明会への集客か。配分案は製造180・建設90・宿泊30で提示済み。", up:["e4","e8"], due:"9月中"},
+    {id:"t16", L:"t", t:"DM送付先リストを入手する", nt:"売上10〜20億円規模・県内資本の企業を抽出する。入手元と費用を決める。", up:["e4"], due:"9月中"},
+    {id:"t17", L:"t", t:"DM原稿と同封物を仕上げる", nt:"A4チラシの流用可否、問い合わせの受け皿、反応の記録方法まで決める。", up:["e4"], due:"9月中"},
+    {id:"t18", L:"t", t:"価格表の金額と研修の扱いを確定する", nt:"規模レンジ別の金額を決める。研修を料金に含めるか、別建てで残すかを先に決める。", up:["e10"], due:"9月中", ow:"浜西"},
+    {id:"t19", L:"t", t:"営業資料を精査しデザイン化する", nt:"ダイジェスト版・試算版のたたきを9/15に提出済み。精査のうえデザインを依頼する。", up:["e9"], due:"9月中", ow:"高野部長・浜西"},
+    {id:"t20", L:"t", t:"A4チラシを仕上げる", nt:"担当者止まりの面談で託す1枚。試算数字はアクサ資料に合わせる。", up:["e9"], due:"9月中"},
+    {id:"t21", L:"t", t:"運管・競合の費用比較表を作る", nt:"八十二・SBI・アクサ・FDCJ。SBIのプラン管理料は月額／年額の単位を確認する。UFJ・メガバンクは調査中。", up:["e10"], due:"9月中", ow:"浜西"},
+    {id:"t22", L:"t", t:"経審の加点対象になるかを確認する", nt:"建設業向けの訴求の核。W点（社会性等）で選択制でも加点されるかを確かめる。", up:["e8"], due:"9月中", ow:"浜西"},
+    {id:"t23", L:"t", t:"アクサに中小企業の導入事例を依頼する", nt:"公開情報の事例は簡素なものしかない。ダイジェスト版の事例ページに使う。", up:["e9"], due:"9月中"},
+    {id:"t24", L:"t", t:"11/30説明会の集客・登壇・資料を準備する", nt:"50社想定、3名のジョイント形式。投影資料は中立性を担保した体裁にする。", up:["e11"], due:"11月中"}
   ];
 
   const TASK_SEED = {
-    t1: { status:"done" }, t2:{ status:"review" }, t3:{ status:"doing" }, t4:{ status:"todo" },
-    t5:{ status:"done" }, t6:{ status:"todo" }, t7:{ status:"backlog" }, t8:{ status:"doing" },
-    t10:{ status:"todo" }, t11:{ status:"todo" }, t12:{ status:"review" }, t13:{ status:"todo" }, t14:{ status:"todo" }
+    t1: { status:"done" }, t2:{ status:"review" }, t3:{ status:"done" }, t4:{ status:"todo" },
+    t5:{ status:"done" }, t6:{ status:"todo" }, t7:{ status:"backlog" }, t8:{ status:"done" },
+    t10:{ status:"todo" }, t11:{ status:"todo" }, t12:{ status:"review" }, t13:{ status:"todo" }, t14:{ status:"review" },
+    t15:{ status:"review" }, t16:{ status:"todo" }, t17:{ status:"todo" }, t18:{ status:"doing" }, t19:{ status:"doing" },
+    t20:{ status:"todo" }, t21:{ status:"doing" }, t22:{ status:"todo" }, t23:{ status:"todo" }, t24:{ status:"todo" }
   };
 
   const MONTHS = [
@@ -82,18 +99,19 @@
   const GANTT_ROWS = [
     {l:"制度・法令",w:"h",wt:"法令",f:[[4,"12/1 上限62,000円",""],[13,"9/1 厚年上限68万",""]]},
     {l:"自社の準備",w:"j",wt:"自社",b:[[0,3,"j","報酬設計・試算表・説明会ルール"]]},
-    {l:"DM・営業",w:"j",wt:"自社",b:[[1,15,"j","DM発出 → 先行接触 → 面談 → 提案（継続）"]]},
+    {l:"DM・営業",w:"j",wt:"自社",b:[[1,15,"j","DM発出（〜10月上旬）→ 先行接触 → 面談 → 提案（継続）"]]},
+    {l:"11/30 説明会",w:"j",wt:"自社",b:[[1,4,"j","集客 → 資料準備"]],f:[[3,"11/30 説明会","a"]]},
     {l:"第1号 導入工程",w:"u",wt:"案件",b:[[1,7,"u","規程整備 → 規約申請 → 厚生局審査 → 加入者登録"]],f:[[7,"3月 施行","a"]]},
     {l:"第1号 社会保険",w:"k",wt:"手続",b:[[8,11,"k","4〜6月支払分が算定基礎"]],f:[[11,"算定基礎届","a"],[13,"9月 等級改定",""]]},
     {l:"削減の実現",w:"c",wt:"CF",f:[[12,"8月 通知書","g"],[14,"10月 CF実現","g"]]},
-    {l:"報酬の請求",w:"c",wt:"収益",b:[[12,15,"c","通知書ベースで請求"]]},
+    {l:"報酬の請求",w:"c",wt:"収益",b:[[8,10,"c","固定料金を導入後に請求"]]},
     {l:"第2号（11月合意）",w:"u",wt:"案件",b:[[3,9,"u","導入工程"]],f:[[9,"5月 施行","a"]]},
     {l:"継続支援",w:"j",wt:"自社",b:[[7,15,"s","投資教育・フォロー・顧問提案"]]}
   ];
 
   const TRACKS = [
-    {id:'preparation',title:'事業準備',icon:'01',period:'8〜10月',description:'報酬設計・試算・説明ルールを揃え、提案できる状態にする。',ids:['t1','t2','t3','t4','t8','t10','t11','t12','t13']},
-    {id:'sales',title:'営業・候補企業の開拓',icon:'02',period:'9月〜',description:'候補企業を絞り、DMと個別提案から最初の合意につなげる。',ids:['t5','t6','t7','t14']}
+    {id:'preparation',title:'事業準備',icon:'01',period:'8〜10月',description:'価格・試算・説明ルールを揃え、提案できる状態にする。',ids:['t1','t2','t3','t4','t8','t10','t11','t12','t13','t18','t21','t22']},
+    {id:'sales',title:'営業・候補企業の開拓',icon:'02',period:'9月〜',description:'営業資料とDMを整え、個別提案と11/30説明会から最初の合意につなげる。',ids:['t5','t6','t7','t14','t15','t16','t17','t19','t20','t23','t24']}
   ];
   const TODAY = new Date();
   const TODAY_START = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
@@ -103,14 +121,25 @@
   const nx = new Map(NODES.map(n => [n.id,n]));
   const children = new Map(NODES.map(n => [n.id,[]]));
   NODES.forEach(n => (n.up || []).forEach(p => children.get(p)?.push(n.id)));
-  const seedTasks = () => NODES.filter(n=>n.L==='t').map(n=>({id:n.id,title:n.t,description:n.nt,due:n.due,status:TASK_SEED[n.id]?.status || 'todo',track:TRACKS.find(t=>t.ids.includes(n.id))?.id || 'preparation'}));
+  let BOARD = null; // board.json（共有の進捗）。リポジトリ側で更新すれば全員の画面に反映される
+  const seedTasks = () => NODES.filter(n=>n.L==='t').map(n=>{
+    const task={id:n.id,title:n.t,description:n.nt,due:n.due,owner:n.ow||'',status:TASK_SEED[n.id]?.status || 'todo',track:TRACKS.find(t=>t.ids.includes(n.id))?.id || 'preparation'};
+    const row=BOARD?.tasks?.find(r=>r?.id===n.id);
+    if(row){if(STATUS_ORDER.includes(row.status))task.status=row.status;if(typeof row.owner==='string')task.owner=row.owner;if(typeof row.due==='string'&&row.due)task.due=row.due;}
+    return task;
+  });
   function loadState(){
-    const base = {tasks:seedTasks(),updatedAt:null,selectedMonth:ym(2027,3),saveFailed:false};
+    const base = {tasks:seedTasks(),updatedAt:null,selectedMonth:ym(2027,3),saveFailed:false,source:BOARD?'board':'seed',imported:false};
     try {
       const raw = localStorage.getItem(TASK_KEY) || localStorage.getItem(STORAGE_KEY);
       if(!raw) return base;
       const parsed = JSON.parse(raw), saved = Array.isArray(parsed) ? parsed : parsed?.tasks;
       if(!Array.isArray(saved)) return base;
+      if(OPTIONS.some(([y,m])=>ym(y,m)===parsed.selectedMonth))base.selectedMonth=parsed.selectedMonth;
+      // 共有の進捗のほうが新しければ、この端末の古い変更は使わない
+      const localAt=typeof parsed.updatedAt==='string'?Date.parse(parsed.updatedAt):NaN, boardAt=BOARD?.updatedAt?Date.parse(BOARD.updatedAt):NaN;
+      if(BOARD && !(localAt>boardAt)) return base;
+      base.source='local';
       base.tasks.forEach(task=>{const row=saved.find(t=>t?.id===task.id);if(row && STATUS_ORDER.includes(row.status))task.status=row.status;});
       base.updatedAt=typeof parsed.updatedAt==='string' && !Number.isNaN(Date.parse(parsed.updatedAt)) ? parsed.updatedAt : null;
       base.imported = Array.isArray(parsed) || parsed.imported === true;
@@ -146,15 +175,16 @@
     $('nextCount').textContent=`${next.length}件`;
     $('nextActions').innerHTML=next.length?next.map((t,i)=>`<button class="action-row" data-task="${t.id}"><span class="action-number">${i+1}</span><span class="action-body"><span class="action-title">${escapeHTML(t.title)}</span><span class="action-meta">${statusPill(t.status)}${dueLabel(t)}</span></span><span class="action-arrow" aria-hidden="true">↗</span></button>`).join(''):'<div class="empty-state">登録タスクはすべて完了しています。<br>次の工程の計画を確認しましょう。</div>';
     $('trackCards').innerHTML=TRACKS.map(track=>{const tasks=state.tasks.filter(t=>t.track===track.id),count=tasks.filter(t=>t.status==='done').length,nextTask=priorityTasks(tasks)[0];return `<article class="track-card ${track.id}"><div class="track-heading"><span class="track-icon">${track.icon}</span><h3>${track.title}</h3><small>${track.period}</small></div><p class="track-description">${track.description}</p><div class="track-count"><span>登録タスクの完了</span><strong>${count}<span> / ${tasks.length}</span></strong></div><div class="progress" role="progressbar" aria-label="${track.title}のタスク完了率" aria-valuenow="${Math.round(count/tasks.length*100)}" aria-valuemin="0" aria-valuemax="100"><span style="width:${count/tasks.length*100}%"></span></div><div class="track-next"><small>次に進めること</small>${nextTask?`<button data-task="${nextTask.id}">${escapeHTML(nextTask.title)} <span aria-hidden="true">↗</span></button>`:'登録タスクはすべて完了'}<a class="text-link" href="#tasks" data-track-link="${track.id}">関連タスクを見る →</a></div></article>`;}).join('')+`<article class="track-card delivery"><div class="track-heading"><span class="track-icon">03</span><h3>第1号案件の導入</h3><small>9月〜翌3月</small></div><p class="track-description">合意から規程整備・審査・説明会を経て、制度をスタートする。</p><div class="track-count"><span>実績の登録状況</span><strong style="font-size:.9375rem">進捗未登録</strong></div><div class="progress"></div><div class="track-next"><small>次の節目</small>9月中に導入合意<a class="text-link" href="#schedule">導入の計画を確認 →</a></div></article>`;
-    const changed=state.updatedAt||state.imported;
-    $('dataMode').textContent=changed?'更新した進捗':'サンプル進捗';
-    $('dataDescription').textContent=changed?(state.updatedAt?`最終更新 ${new Date(state.updatedAt).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})} · このブラウザの進捗を反映`:'このブラウザに保存されていた進捗を引き継いでいます。'):'提供ファイルの初期状態を表示しています。進捗を更新して使えます。';
+    const changed=state.source==='local'&&(state.updatedAt||state.imported);
+    const stamp=v=>new Date(v).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    $('dataMode').textContent=changed?'この端末で変更中':BOARD?'共有の進捗':'初期状態';
+    $('dataDescription').textContent=changed?(state.updatedAt?`最終更新 ${new Date(state.updatedAt).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})} · このブラウザの進捗を反映`:'このブラウザに保存されていた進捗を引き継いでいます。'):BOARD?`最終更新 ${BOARD.updatedAt?stamp(BOARD.updatedAt):'—'}${BOARD.updatedBy?' · '+BOARD.updatedBy:''}${BOARD.note?' · '+BOARD.note:''}`:'共有の進捗を読み込めなかったため、初期状態を表示しています。';
     $('saveLabel').textContent=state.saveFailed?'未保存 · この画面のみ反映':'このブラウザに保存';
     $('saveLabel').classList.toggle('due-alert',state.saveFailed);
   }
   function renderBoard(){
     const filtered=state.tasks.filter(t=>state.filter==='all'||t.track===state.filter);
-    $('kanbanBoard').innerHTML=STATUS_ORDER.map(status=>{const tasks=filtered.filter(t=>t.status===status);return `<section class="kanban-column" data-status="${status}" aria-label="${STATUS_LABELS[status]}"><h2 class="kanban-head">${STATUS_LABELS[status]}<span>${tasks.length}</span></h2><div class="dropzone" data-dropzone="${status}">${tasks.length?tasks.map(t=>`<button class="task-card" draggable="true" data-task="${t.id}"><span class="task-category">${trackById(t.track).title}</span><strong>${escapeHTML(t.title)}</strong><span class="task-meta">${dueLabel(t)}<span class="task-id">${t.id.toUpperCase()}</span></span></button>`).join(''):'<div class="empty-state">タスクはありません</div>'}</div></section>`;}).join('');
+    $('kanbanBoard').innerHTML=STATUS_ORDER.map(status=>{const tasks=filtered.filter(t=>t.status===status);return `<section class="kanban-column" data-status="${status}" aria-label="${STATUS_LABELS[status]}"><h2 class="kanban-head">${STATUS_LABELS[status]}<span>${tasks.length}</span></h2><div class="dropzone" data-dropzone="${status}">${tasks.length?tasks.map(t=>`<button class="task-card" draggable="true" data-task="${t.id}"><span class="task-category">${trackById(t.track).title}</span><strong>${escapeHTML(t.title)}</strong><span class="task-meta">${dueLabel(t)}<span class="task-id">${t.owner?escapeHTML(t.owner)+" · ":""}${t.id.toUpperCase()}</span></span></button>`).join(''):'<div class="empty-state">タスクはありません</div>'}</div></section>`;}).join('');
     document.querySelectorAll('[data-track]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.track===state.filter)));
   }
   function renderMap(){
@@ -166,11 +196,11 @@
     const task=taskById(node.id);
     const chain=[...ancestors(node.id)].map(id=>nx.get(id)).sort((a,b)=>LAYERS.findIndex(l=>l.key===a.L)-LAYERS.findIndex(l=>l.key===b.L));
     const related=[...descendants(node.id)].map(taskById).filter(Boolean);
-    $('detailBody').innerHTML=`<div>${task?statusPill(task.status):`<span class="outline-pill">${LEVEL_LABELS[node.L]}</span>`}</div><h2 id="detailTitle">${escapeHTML(node.t)}</h2><p class="detail-description">${escapeHTML(node.nt)}</p>${task?`<div class="detail-meta"><div><span class="meta-label">取り組み</span><span>${trackById(task.track).title}</span></div><div><span class="meta-label">期限</span><span>2026年 ${dueLabel(task)}</span></div><div><span class="meta-label">担当者</span><span>未設定</span></div><div><label for="taskStatus">進捗</label><select id="taskStatus">${STATUS_ORDER.map(s=>`<option value="${s}" ${s===task.status?'selected':''}>${STATUS_LABELS[s]}</option>`).join('')}</select></div></div><div class="detail-actions">${task.status!=='done'?`<button class="button primary" data-complete="${task.id}">完了にする ✓</button>`:'<span class="pill done">完了済み</span>'}<a class="button secondary" href="simulator.html">試算を開く ↗</a></div>`:''}${chain.length?`<div class="detail-section"><h3>この取り組みにつながる背景</h3>${chain.map(n=>`<div class="context-item"><small>${LEVEL_LABELS[n.L]}</small>${escapeHTML(n.t)}</div>`).join('')}</div>`:''}${related.length?`<div class="detail-section"><h3>関連タスク <span class="count-badge">${related.length}</span></h3>${related.map(t=>`<button class="detail-task" data-task="${t.id}">${escapeHTML(t.title)}${statusPill(t.status)}</button>`).join('')}</div>`:''}<p class="footnote">背景には提供資料の仮説・前提を含みます。</p>`;
+    $('detailBody').innerHTML=`<div>${task?statusPill(task.status):`<span class="outline-pill">${LEVEL_LABELS[node.L]}</span>`}</div><h2 id="detailTitle">${escapeHTML(node.t)}</h2><p class="detail-description">${escapeHTML(node.nt)}</p>${task?`<div class="detail-meta"><div><span class="meta-label">取り組み</span><span>${trackById(task.track).title}</span></div><div><span class="meta-label">期限</span><span>2026年 ${dueLabel(task)}</span></div><div><span class="meta-label">担当者</span><span>${escapeHTML(task.owner||'未設定')}</span></div><div><label for="taskStatus">進捗</label><select id="taskStatus">${STATUS_ORDER.map(s=>`<option value="${s}" ${s===task.status?'selected':''}>${STATUS_LABELS[s]}</option>`).join('')}</select></div></div><div class="detail-actions">${task.status!=='done'?`<button class="button primary" data-complete="${task.id}">完了にする ✓</button>`:'<span class="pill done">完了済み</span>'}<a class="button secondary" href="simulator.html">試算を開く ↗</a></div>`:''}${chain.length?`<div class="detail-section"><h3>この取り組みにつながる背景</h3>${chain.map(n=>`<div class="context-item"><small>${LEVEL_LABELS[n.L]}</small>${escapeHTML(n.t)}</div>`).join('')}</div>`:''}${related.length?`<div class="detail-section"><h3>関連タスク <span class="count-badge">${related.length}</span></h3>${related.map(t=>`<button class="detail-task" data-task="${t.id}">${escapeHTML(t.title)}${statusPill(t.status)}</button>`).join('')}</div>`:''}<p class="footnote">背景には提供資料の仮説・前提を含みます。</p>`;
   }
   function openDetail(id){if(!nx.has(id))return;if(!$('detailDialog').open)returnFocus=document.activeElement;state.selectedId=id;renderMap();renderDetail();if(!$('detailDialog').open)$('detailDialog').showModal();}
   function closeDetail(){const d=$('detailDialog');if(d.open)d.close();}
-  function updateTask(id,status){const t=taskById(id);if(!t||!STATUS_ORDER.includes(status)||t.status===status)return;t.status=status;state.updatedAt=new Date().toISOString();const saved=persist();const focusId=document.activeElement?.id;renderAll();if($('detailDialog').open){renderDetail();if(focusId&&$(focusId))$(focusId).focus();}notify(saved?`「${STATUS_LABELS[status]}」に更新しました`:'進捗を更新しましたが、ブラウザに保存できませんでした');}
+  function updateTask(id,status){const t=taskById(id);if(!t||!STATUS_ORDER.includes(status)||t.status===status)return;t.status=status;state.updatedAt=new Date().toISOString();state.source='local';const saved=persist();const focusId=document.activeElement?.id;renderAll();if($('detailDialog').open){renderDetail();if(focusId&&$(focusId))$(focusId).focus();}notify(saved?`「${STATUS_LABELS[status]}」に更新しました`:'進捗を更新しましたが、ブラウザに保存できませんでした');}
   function renderPlanner(){
     $('plannerMonth').innerHTML=OPTIONS.map(([y,m])=>`<option value="${ym(y,m)}" ${state.selectedMonth===ym(y,m)?'selected':''}>${y}年${m}月</option>`).join('');
     const chosen=state.selectedMonth,start=chosen-6,slack=start-NOW;
@@ -197,7 +227,7 @@
   $('plannerMonth').addEventListener('change',e=>{const value=Number(e.target.value);if(!OPTIONS.some(([y,m])=>ym(y,m)===value))return;state.selectedMonth=value;persist();renderPlanner();renderOverview();if(state.saveFailed)notify('比較条件を保存できませんでした');});
   $('resetBoardBtn').addEventListener('click',()=>$('resetDialog').showModal());
   $('cancelReset').addEventListener('click',()=>$('resetDialog').close());
-  $('confirmReset').addEventListener('click',()=>{state.tasks=seedTasks();state.updatedAt=null;state.imported=false;state.selectedId=null;const saved=persist();$('resetDialog').close();renderAll();notify(saved?'初期状態に戻しました':'初期状態に戻しましたが、保存できませんでした');});
+  $('confirmReset').addEventListener('click',()=>{state.tasks=seedTasks();state.updatedAt=null;state.imported=false;state.source=BOARD?'board':'seed';state.selectedId=null;const saved=persist();$('resetDialog').close();renderAll();notify(saved?'共有の進捗に戻しました':'共有の進捗に戻しましたが、保存できませんでした');});
   $('kanbanBoard').addEventListener('dragstart',e=>{const card=e.target.closest('[data-task]');if(card){e.dataTransfer.setData('text/plain',card.dataset.task);e.dataTransfer.effectAllowed='move';}});
   $('kanbanBoard').addEventListener('dragover',e=>{const col=e.target.closest('[data-status]');if(col){e.preventDefault();e.dataTransfer.dropEffect='move';col.classList.add('is-over');}});
   $('kanbanBoard').addEventListener('dragleave',e=>{const col=e.target.closest('[data-status]');if(col&&!col.contains(e.relatedTarget))col.classList.remove('is-over');});
@@ -207,5 +237,9 @@
   window.addEventListener('storage',e=>{if(e.key===TASK_KEY){const incoming=loadState();Object.assign(state,incoming);renderAll();if($('detailDialog').open)renderDetail();}});
   $('todayLabel').textContent=TODAY.toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit',weekday:'short'});
   renderAll();route();
+  fetch('board.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{
+    if(!j||!Array.isArray(j.tasks))return;
+    BOARD=j;Object.assign(state,loadState());renderAll();if($('detailDialog').open)renderDetail();
+  }).catch(()=>{});
   if(state.storageWarning)notify('保存データを読み込めなかったため、初期状態を表示しています');
 })();

@@ -1,145 +1,203 @@
 {
-  "updatedAt": "2026-09-17T20:00:00+09:00",
+  "updatedAt": "2026-10-05T13:51:00+09:00",
   "updatedBy": "浜西",
-  "note": "9/17 サイボウズのスレッドを反映",
+  "note": "9/18・9/30のMTGと10/5までの状況を反映（新規5件、営業資料は共有済み）",
   "tasks": [
     {
       "id": "t1",
       "title": "委託契約書の報酬条項を読む",
       "status": "done",
-      "owner": ""
+      "owner": "",
+      "due": "8月中"
     },
     {
       "id": "t2",
       "title": "代表事業主に収益条件を確認する",
       "status": "review",
-      "owner": ""
+      "owner": "",
+      "due": "8月中"
     },
     {
       "id": "t3",
       "title": "報酬3案を比較し1案に決める",
       "status": "done",
-      "owner": ""
+      "owner": "",
+      "due": "9月上旬"
     },
     {
       "id": "t4",
       "title": "10社想定の資金繰り表を作る",
       "status": "todo",
-      "owner": ""
+      "owner": "",
+      "due": "9月上旬"
     },
     {
       "id": "t5",
       "title": "DM原稿の限度額の誤りを直す",
       "status": "done",
-      "owner": ""
+      "owner": "",
+      "due": "8月中"
     },
     {
       "id": "t6",
       "title": "DMを300社に発送する",
       "status": "todo",
-      "owner": ""
+      "owner": "",
+      "due": "10月上旬"
     },
     {
       "id": "t7",
       "title": "本命2〜3社を選定する",
       "status": "backlog",
-      "owner": ""
+      "owner": "",
+      "due": "8月中"
     },
     {
       "id": "t8",
       "title": "等級ベースの試算表を作る",
       "status": "done",
-      "owner": ""
+      "owner": "",
+      "due": "9月上旬"
     },
     {
       "id": "t10",
       "title": "説明会ルールを文書化する",
       "status": "todo",
-      "owner": ""
+      "owner": "",
+      "due": "9月中"
     },
     {
       "id": "t11",
       "title": "会社向け同意書のひな形を作る",
       "status": "todo",
-      "owner": ""
+      "owner": "",
+      "due": "9月中"
     },
     {
       "id": "t12",
       "title": "社労士の連携先を確保する",
       "status": "review",
-      "owner": ""
+      "owner": "",
+      "due": "9月中"
     },
     {
       "id": "t13",
       "title": "稼働時間の記録フォーマットを作る",
       "status": "todo",
-      "owner": ""
+      "owner": "",
+      "due": "9月中"
     },
     {
       "id": "t14",
       "title": "宿泊・観光業以外のターゲット業界を決める",
-      "status": "review",
-      "owner": ""
+      "status": "done",
+      "owner": "",
+      "due": "9月中"
     },
     {
       "id": "t15",
-      "title": "DMの目的と業種配分を確定する",
+      "title": "DMの宛先と版の分け方を決める",
       "status": "review",
-      "owner": ""
+      "owner": "",
+      "due": "10月上旬"
     },
     {
       "id": "t16",
       "title": "DM送付先リストを入手する",
-      "status": "todo",
-      "owner": ""
+      "status": "done",
+      "owner": "",
+      "due": "9月中"
     },
     {
       "id": "t17",
       "title": "DM原稿と同封物を仕上げる",
-      "status": "todo",
-      "owner": ""
+      "status": "doing",
+      "owner": "浜西",
+      "due": "10月上旬"
     },
     {
       "id": "t18",
       "title": "価格表の金額と研修の扱いを確定する",
       "status": "doing",
-      "owner": "浜西"
+      "owner": "浜西",
+      "due": "9月中"
     },
     {
       "id": "t19",
       "title": "営業資料を精査しデザイン化する",
-      "status": "doing",
-      "owner": "高野部長・浜西"
+      "status": "done",
+      "owner": "高野部長・浜西",
+      "due": "10月上旬"
     },
     {
       "id": "t20",
       "title": "A4チラシを仕上げる",
       "status": "todo",
-      "owner": ""
+      "owner": "高野部長",
+      "due": "9月中"
     },
     {
       "id": "t21",
       "title": "運管・競合の費用比較表を作る",
       "status": "doing",
-      "owner": "浜西"
+      "owner": "浜西",
+      "due": "9月中"
     },
     {
       "id": "t22",
       "title": "経審の加点対象になるかを確認する",
       "status": "todo",
-      "owner": "浜西"
+      "owner": "浜西",
+      "due": "9月中"
     },
     {
       "id": "t23",
       "title": "アクサに中小企業の導入事例を依頼する",
       "status": "todo",
-      "owner": ""
+      "owner": "",
+      "due": "9月中"
     },
     {
       "id": "t24",
       "title": "11/30説明会の集客・登壇・資料を準備する",
+      "status": "doing",
+      "owner": "",
+      "due": "11月中"
+    },
+    {
+      "id": "t25",
+      "title": "訴求軸11本の採否を社内で決める",
       "status": "todo",
-      "owner": ""
+      "owner": "",
+      "due": "10月中"
+    },
+    {
+      "id": "t26",
+      "title": "法人会会報誌（11月号）にDMを載せる",
+      "status": "todo",
+      "owner": "",
+      "due": "10月中"
+    },
+    {
+      "id": "t27",
+      "title": "社労士に資料の表現3点を確認する",
+      "status": "todo",
+      "owner": "",
+      "due": "10月中"
+    },
+    {
+      "id": "t28",
+      "title": "成果報酬の覚書を結ぶ",
+      "status": "todo",
+      "owner": "浜西",
+      "due": "12月中"
+    },
+    {
+      "id": "t29",
+      "title": "第1号の施行目標（2027年3月）を見直すか決める",
+      "status": "todo",
+      "owner": "",
+      "due": "10月中"
     }
   ]
 }

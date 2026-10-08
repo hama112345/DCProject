@@ -18,3 +18,45 @@
 .footnote,.task-card .task-category,.task-card .task-meta,.metric-note,.muted-caption,.action-meta,.journey-step p,.journey-step small,.footer,.track-count,.date-label{color:#667084}
 .action-meta,.task-card .task-meta{font-size:.875rem}.task-card .task-meta .due-alert,.action-meta .due-alert{color:var(--red)}
 .metric-label{font-size:.875rem}.metric.alert .metric-label b{align-self:flex-start}
+
+/* ===== 編集モード ===== */
+.topbar-right{display:flex;align-items:center;gap:14px}
+.edit-toggle{min-height:34px;padding:6px 13px;font-size:.8125rem;gap:8px;white-space:nowrap}
+.head-actions{display:flex;gap:10px;flex-wrap:wrap}
+body.editing [data-ed]{outline:1px dashed #a7a4ea;outline-offset:3px;border-radius:3px;cursor:text}
+body.editing [data-ed]:hover{background:#f3f2ff}
+body.editing [data-ed]:focus{outline:2px solid var(--accent);background:#fff;box-shadow:0 0 0 4px #7878f21f}
+body.editing [data-ed]:empty:before{content:"（空）";color:#aeb4c2}
+body.editing .sidebar [data-ed]{outline-color:#5d6a8d}
+body.editing .sidebar [data-ed]:hover{background:#252f43}
+body.editing main{padding-bottom:120px}
+body.editing .toast{bottom:104px}
+.edit-bar{position:fixed;left:0;right:0;bottom:0;z-index:90;background:#192132;color:#e7ebf3;display:flex;align-items:center;gap:9px;padding:11px 18px;flex-wrap:wrap;box-shadow:0 -4px 18px #16203826}
+.edit-bar .button{min-height:36px;padding:7px 12px;font-size:.8125rem;gap:8px}
+.edit-bar .secondary{background:#27324a;border-color:#3b4761;color:#dbe2ee}
+.edit-bar .secondary:hover{background:#313d59;border-color:#5b6c8d}
+.edit-bar-state{font-size:.8125rem;color:#aab6c9;margin-right:auto;min-width:200px}
+.edit-input{background:#27324a;border:1px solid #3b4761;color:#e7ebf3;border-radius:7px;padding:8px 10px;font-size:.8125rem;min-height:36px;width:120px}
+.edit-input.wide{width:200px}
+.edit-input::placeholder{color:#8591a8}
+.edit-form{display:grid;gap:14px;margin:22px 0}
+.edit-form label{display:grid;gap:6px;font-size:.8125rem;color:#7b8597}
+.edit-form input,.edit-form textarea,.edit-form select{width:100%;border:1px solid #d8deea;border-radius:7px;padding:10px 12px;font-size:.9375rem;color:var(--ink);background:#fff;font-family:inherit}
+.edit-form textarea{resize:vertical;line-height:1.8}
+.edit-form input:focus,.edit-form textarea:focus,.edit-form select:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px #7878f21f}
+.button.danger{border:1px solid #e3c2c4;background:#fff;color:#b23b45}
+.button.danger:hover{background:#fdf4f4;border-color:#d79aa0}
+.howto{margin:16px 0 8px;padding-left:22px;font-size:.9375rem;line-height:2;color:#4b5465}
+.howto li{margin-bottom:9px}
+.howto b{font-weight:700;color:var(--ink)}
+@media(max-width:760px){
+  .topbar-right{gap:8px}
+  .edit-toggle{min-height:30px;padding:5px 9px;font-size:.75rem}
+  .edit-bar{gap:7px;padding:9px 12px}
+  .edit-bar-state{min-width:100%;margin:0 0 2px}
+  .edit-input{width:calc(50% - 4px)}
+  .edit-input.wide{width:100%}
+  .edit-bar .button{flex:1 1 auto;min-width:calc(50% - 4px)}
+  body.editing main{padding-bottom:210px}
+  body.editing .toast{bottom:200px}
+}

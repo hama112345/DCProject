@@ -3,6 +3,37 @@
   "use strict";
 
   const STORAGE_KEY = "dc-dashboard-prototype-v2";
+  const CONTENT_KEY = "dc-dashboard-content-v1";
+  const emptyC = () => ({texts:{},tasks:{},hidden:[]});
+  let SHARED = emptyC();          // content.json（みんなに見える内容）
+  let DRAFT  = emptyC();          // この端末だけの未書き出し編集
+  let C      = emptyC();          // 表示に使う合成結果
+  const DEFAULTS = {};            // 画面に元から書いてある文言
+  function mergeContent(){
+    const tasks={};
+    [SHARED.tasks||{},DRAFT.tasks||{}].forEach(src=>Object.entries(src).forEach(([id,v])=>{tasks[id]={...(tasks[id]||{}),...(v||{})};}));
+    C={texts:{...(SHARED.texts||{}),...(DRAFT.texts||{})},tasks,
+       hidden:[...new Set([...(SHARED.hidden||[]),...(DRAFT.hidden||[])])],
+       updatedAt:SHARED.updatedAt||null,updatedBy:SHARED.updatedBy||'',note:SHARED.note||''};
+  }
+  const T  = (k,f) => typeof C.texts[k]==='string' ? C.texts[k] : f;
+  const ED = k => ` data-ed="${k}"`;
+  const nl2br = v => String(v).replace(/\n/g,'<br>');
+  function loadDraft(){
+    try{const raw=localStorage.getItem(CONTENT_KEY);if(!raw)return;const j=JSON.parse(raw);
+      if(j&&typeof j==='object')DRAFT={texts:j.texts||{},tasks:j.tasks||{},hidden:Array.isArray(j.hidden)?j.hidden:[]};}catch{}
+  }
+  function saveDraft(){try{localStorage.setItem(CONTENT_KEY,JSON.stringify(DRAFT));return true;}catch{return false;}}
+  const draftCount = () => Object.keys(DRAFT.texts).length+Object.keys(DRAFT.tasks).length+DRAFT.hidden.length;
+  function setText(key,value){
+    const base = typeof (SHARED.texts||{})[key]==='string' ? SHARED.texts[key] : (key in DEFAULTS ? DEFAULTS[key] : undefined);
+    if(value===base) delete DRAFT.texts[key]; else DRAFT.texts[key]=value;
+    mergeContent();saveDraft();refreshEditBar();
+  }
+  function setTaskField(id,field,value){
+    const t=DRAFT.tasks[id]||(DRAFT.tasks[id]={});
+    t[field]=value;mergeContent();saveDraft();refreshEditBar();
+  }
   const STATUS_ORDER = ["backlog", "todo", "doing", "review", "done"];
   const STATUS_LABELS = { backlog:"後で着手", todo:"未着手", doing:"進行中", review:"確認待ち", done:"完了" };
   const LEVEL_LABELS = { goal:"目的", q:"検討課題", h:"仮説", e:"検証", t:"アクション" };
@@ -113,19 +144,42 @@
     {id:'preparation',title:'事業準備',icon:'01',period:'8〜10月',description:'価格・試算・説明ルールを揃え、提案できる状態にする。',ids:['t1','t2','t3','t4','t8','t10','t11','t12','t13','t18','t21','t22']},
     {id:'sales',title:'営業・候補企業の開拓',icon:'02',period:'9月〜',description:'営業資料とDMを整え、個別提案と11/30説明会から最初の合意につなげる。',ids:['t5','t6','t7','t14','t15','t16','t17','t19','t20','t23','t24']}
   ];
+  const SL = s => T('status.'+s, STATUS_LABELS[s]);
+  const LL = k => T('level.'+k, LEVEL_LABELS[k]);
+  const TRK = (t,f) => T('track.'+t.id+'.'+f, t[f]);
   const TODAY = new Date();
   const TODAY_START = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
   const TASK_KEY = 'dc-dashboard-v3';
   const $ = id => document.getElementById(id);
   const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const nx = new Map(NODES.map(n => [n.id,n]));
-  const children = new Map(NODES.map(n => [n.id,[]]));
-  NODES.forEach(n => (n.up || []).forEach(p => children.get(p)?.push(n.id)));
+  let ALL_NODES = [], nx = new Map(), children = new Map();
+  function buildNodes(){
+    const extra = Object.entries(C.tasks)
+      .filter(([id,v]) => v && v.isNew && !NODES.some(n=>n.id===id))
+      .map(([id,v]) => ({id,L:'t',t:v.title||'新しいタスク',nt:v.description||'',up:[],due:v.due||'',ow:v.owner||''}));
+    ALL_NODES = NODES.concat(extra)
+      .filter(n => !C.hidden.includes(n.id))
+      .map(n => {
+        if(n.L!=='t') return {...n, t:T('node.'+n.id+'.t',n.t), nt:T('node.'+n.id+'.nt',n.nt)};
+        const o=C.tasks[n.id]||{};
+        return {...n, t:typeof o.title==='string'?o.title:n.t,
+                      nt:typeof o.description==='string'?o.description:n.nt,
+                      due:typeof o.due==='string'?o.due:(n.due||''),
+                      ow:typeof o.owner==='string'?o.owner:(n.ow||'')};
+      });
+    nx = new Map(ALL_NODES.map(n => [n.id,n]));
+    children = new Map(ALL_NODES.map(n => [n.id,[]]));
+    ALL_NODES.forEach(n => (n.up || []).forEach(p => children.get(p)?.push(n.id)));
+  }
+  loadDraft(); mergeContent(); buildNodes();
   let BOARD = null; // board.json（共有の進捗）。リポジトリ側で更新すれば全員の画面に反映される
-  const seedTasks = () => NODES.filter(n=>n.L==='t').map(n=>{
-    const task={id:n.id,title:n.t,description:n.nt,due:n.due,owner:n.ow||'',status:TASK_SEED[n.id]?.status || 'todo',track:TRACKS.find(t=>t.ids.includes(n.id))?.id || 'preparation'};
+  const seedTasks = () => ALL_NODES.filter(n=>n.L==='t').map(n=>{
+    const o=C.tasks[n.id]||{};
+    const task={id:n.id,title:n.t,description:n.nt,due:n.due||'',owner:n.ow||'',status:TASK_SEED[n.id]?.status || 'todo',track:TRACKS.find(t=>t.ids.includes(n.id))?.id || 'preparation'};
     const row=BOARD?.tasks?.find(r=>r?.id===n.id);
-    if(row){if(STATUS_ORDER.includes(row.status))task.status=row.status;if(typeof row.owner==='string')task.owner=row.owner;if(typeof row.due==='string'&&row.due)task.due=row.due;}
+    if(row){if(STATUS_ORDER.includes(row.status))task.status=row.status;if(typeof row.owner==='string'&&row.owner)task.owner=row.owner;if(typeof row.due==='string'&&row.due)task.due=row.due;}
+    if(STATUS_ORDER.includes(o.status))task.status=o.status;
+    if(TRACKS.some(t=>t.id===o.track))task.track=o.track;
     return task;
   });
   function loadState(){
@@ -147,7 +201,7 @@
     } catch {base.storageWarning=true;}
     return base;
   }
-  const state = {...loadState(),selectedId:null,filter:'all',view:'overview'};
+  const state = {...loadState(),selectedId:null,filter:'all',view:'overview',edit:false};
   let toastTimer, returnFocus;
   function notify(message){$('toast').textContent=message;$('toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('visible'),3000);}
   function persist(){
@@ -155,74 +209,78 @@
     catch {state.saveFailed=true;return false;}
   }
   const taskById = id => state.tasks.find(t=>t.id===id);
-  const trackById = id => TRACKS.find(t=>t.id===id);
-  function dueBoundary(task){const month=Number(task.due.match(/(\d+)月/)?.[1]);if(!month)return Infinity;return task.due.includes('上旬') ? new Date(2026,month-1,10).getTime() : new Date(2026,month,0).getTime();}
+  const trackById = id => TRACKS.find(t=>t.id===id) || TRACKS[0];
+  function dueBoundary(task){const month=Number(String(task.due||'').match(/(\d+)月/)?.[1]);if(!month)return Infinity;return task.due.includes('上旬') ? new Date(2026,month-1,10).getTime() : new Date(2026,month,0).getTime();}
   const overdue = task => task.status !== 'done' && dueBoundary(task) < TODAY_START;
   function priorityTasks(tasks=state.tasks){const rank={review:0,doing:1,todo:2,backlog:3,done:4};return tasks.filter(t=>t.status!=='done').sort((a,b)=>dueBoundary(a)-dueBoundary(b) || rank[a.status]-rank[b.status] || Number(a.id.slice(1))-Number(b.id.slice(1)));}
   function ancestors(id,seen=new Set()){(nx.get(id)?.up||[]).forEach(p=>{if(!seen.has(p)){seen.add(p);ancestors(p,seen);}});return seen;}
   function descendants(id,seen=new Set()){(children.get(id)||[]).forEach(c=>{if(!seen.has(c)){seen.add(c);descendants(c,seen);}});return seen;}
-  function statusPill(status){return `<span class="pill ${status}">${STATUS_LABELS[status]}</span>`;}
+  function statusPill(status){return `<span class="pill ${status}">${SL(status)}</span>`;}
   function dueLabel(task){return `<span class="${overdue(task)?'due-alert':''}">${task.due}${overdue(task)?' · 期限超過':''}</span>`;}
   function renderOverview(){
     const done=state.tasks.filter(t=>t.status==='done').length,total=state.tasks.length;
     const active=state.tasks.filter(t=>['doing','review'].includes(t.status)).length;
     const late=state.tasks.filter(overdue).length,pct=Math.round(done/total*100);
     $('navTaskCount').textContent=total-done;
-    $('metrics').innerHTML=`<article class="metric"><div class="metric-label">登録タスクの完了<span>${pct}%</span></div><div class="metric-value">${done}<span class="slash-count"> / ${total}</span><small>件</small></div><div class="progress" role="progressbar" aria-label="登録タスクの完了率" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><span style="width:${pct}%"></span></div></article><article class="metric"><div class="metric-label">進行中・確認待ち</div><div class="metric-value">${active}<small>件</small></div><p class="metric-note">進行中 ${state.tasks.filter(t=>t.status==='doing').length} · 確認待ち ${state.tasks.filter(t=>t.status==='review').length}</p></article><article class="metric ${late?'alert':''}"><div class="metric-label">期限を過ぎた未完了<b>要確認</b></div><div class="metric-value">${late}<small>件</small></div><p class="metric-note">${late?'期日の見直し・完了確認が必要':'期限超過のタスクはありません'}</p></article><article class="metric"><div class="metric-label">次の節目 · 導入合意</div><div class="metric-value date-value">2026.09<small>月中</small></div><p class="metric-note">合意実績は未登録</p></article>`;
+    $('metrics').innerHTML=`<article class="metric"><div class="metric-label"><span${ED('metric.1.label')}>${escapeHTML(T('metric.1.label','登録タスクの完了'))}</span><span>${pct}%</span></div><div class="metric-value">${done}<span class="slash-count"> / ${total}</span><small>件</small></div><div class="progress" role="progressbar" aria-label="登録タスクの完了率" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><span style="width:${pct}%"></span></div></article><article class="metric"><div class="metric-label"${ED('metric.2.label')}>${escapeHTML(T('metric.2.label','進行中・確認待ち'))}</div><div class="metric-value">${active}<small>件</small></div><p class="metric-note">${escapeHTML(SL('doing'))} ${state.tasks.filter(t=>t.status==='doing').length} · ${escapeHTML(SL('review'))} ${state.tasks.filter(t=>t.status==='review').length}</p></article><article class="metric ${late?'alert':''}"><div class="metric-label"><span${ED('metric.3.label')}>${escapeHTML(T('metric.3.label','期限を過ぎた未完了'))}</span><b>要確認</b></div><div class="metric-value">${late}<small>件</small></div><p class="metric-note">${late?'期日の見直し・完了確認が必要':'期限超過のタスクはありません'}</p></article><article class="metric"><div class="metric-label"${ED('metric.4.label')}>${escapeHTML(T('metric.4.label','次の節目 · 導入合意'))}</div><div class="metric-value date-value"><span${ED('metric.4.value')}>${escapeHTML(T('metric.4.value','2026.09'))}</span><small${ED('metric.4.unit')}>${escapeHTML(T('metric.4.unit','月中'))}</small></div><p class="metric-note"${ED('metric.4.note')}>${escapeHTML(T('metric.4.note','合意実績は未登録'))}</p></article>`;
     const stages=[{title:'準備・合意',time:'2026.08 — 09',start:ym(2026,8),end:ym(2026,9)},{title:'導入手続き',time:'2026.10 — 2027.02',start:ym(2026,10),end:ym(2027,2)},{title:'第1号施行',time:'2027.03',start:ym(2027,3),end:ym(2027,3)},{title:'検証・継続支援',time:'2027.04 —',start:ym(2027,4),end:Infinity}];
-    $('journey').innerHTML=stages.map((s,i)=>{const current=NOW>=s.start&&NOW<=s.end;return `<div class="journey-step ${current?'current':''}"><span class="step-number">${String(i+1).padStart(2,'0')}</span><h3>${s.title}</h3><p>${s.time}</p><small>${current?'計画上の現在地':NOW>s.end?'実績未登録':'予定'}</small></div>`;}).join('');
+    $('journey').innerHTML=stages.map((s,i)=>{const current=NOW>=s.start&&NOW<=s.end;return `<div class="journey-step ${current?'current':''}"><span class="step-number">${String(i+1).padStart(2,'0')}</span><h3${ED('stage.'+i+'.title')}>${escapeHTML(T('stage.'+i+'.title',s.title))}</h3><p${ED('stage.'+i+'.time')}>${escapeHTML(T('stage.'+i+'.time',s.time))}</p><small>${current?'計画上の現在地':NOW>s.end?'実績未登録':'予定'}</small></div>`;}).join('');
     const next=priorityTasks().slice(0,3);
     $('nextCount').textContent=`${next.length}件`;
     $('nextActions').innerHTML=next.length?next.map((t,i)=>`<button class="action-row" data-task="${t.id}"><span class="action-number">${i+1}</span><span class="action-body"><span class="action-title">${escapeHTML(t.title)}</span><span class="action-meta">${statusPill(t.status)}${dueLabel(t)}</span></span><span class="action-arrow" aria-hidden="true">↗</span></button>`).join(''):'<div class="empty-state">登録タスクはすべて完了しています。<br>次の工程の計画を確認しましょう。</div>';
-    $('trackCards').innerHTML=TRACKS.map(track=>{const tasks=state.tasks.filter(t=>t.track===track.id),count=tasks.filter(t=>t.status==='done').length,nextTask=priorityTasks(tasks)[0];return `<article class="track-card ${track.id}"><div class="track-heading"><span class="track-icon">${track.icon}</span><h3>${track.title}</h3><small>${track.period}</small></div><p class="track-description">${track.description}</p><div class="track-count"><span>登録タスクの完了</span><strong>${count}<span> / ${tasks.length}</span></strong></div><div class="progress" role="progressbar" aria-label="${track.title}のタスク完了率" aria-valuenow="${Math.round(count/tasks.length*100)}" aria-valuemin="0" aria-valuemax="100"><span style="width:${count/tasks.length*100}%"></span></div><div class="track-next"><small>次に進めること</small>${nextTask?`<button data-task="${nextTask.id}">${escapeHTML(nextTask.title)} <span aria-hidden="true">↗</span></button>`:'登録タスクはすべて完了'}<a class="text-link" href="#tasks" data-track-link="${track.id}">関連タスクを見る →</a></div></article>`;}).join('')+`<article class="track-card delivery"><div class="track-heading"><span class="track-icon">03</span><h3>第1号案件の導入</h3><small>9月〜翌3月</small></div><p class="track-description">合意から規程整備・審査・説明会を経て、制度をスタートする。</p><div class="track-count"><span>実績の登録状況</span><strong style="font-size:.9375rem">進捗未登録</strong></div><div class="progress"></div><div class="track-next"><small>次の節目</small>9月中に導入合意<a class="text-link" href="#schedule">導入の計画を確認 →</a></div></article>`;
+    $('trackCards').innerHTML=TRACKS.map(track=>{const tasks=state.tasks.filter(t=>t.track===track.id),count=tasks.filter(t=>t.status==='done').length,nextTask=priorityTasks(tasks)[0];return `<article class="track-card ${track.id}"><div class="track-heading"><span class="track-icon">${track.icon}</span><h3${ED('track.'+track.id+'.title')}>${escapeHTML(TRK(track,'title'))}</h3><small${ED('track.'+track.id+'.period')}>${escapeHTML(TRK(track,'period'))}</small></div><p class="track-description"${ED('track.'+track.id+'.description')}>${escapeHTML(TRK(track,'description'))}</p><div class="track-count"><span>登録タスクの完了</span><strong>${count}<span> / ${tasks.length}</span></strong></div><div class="progress" role="progressbar" aria-label="タスク完了率" aria-valuenow="${tasks.length?Math.round(count/tasks.length*100):0}" aria-valuemin="0" aria-valuemax="100"><span style="width:${tasks.length?count/tasks.length*100:0}%"></span></div><div class="track-next"><small>次に進めること</small>${nextTask?`<button data-task="${nextTask.id}">${escapeHTML(nextTask.title)} <span aria-hidden="true">↗</span></button>`:'登録タスクはすべて完了'}<a class="text-link" href="#tasks" data-track-link="${track.id}">関連タスクを見る →</a></div></article>`;}).join('')+`<article class="track-card delivery"><div class="track-heading"><span class="track-icon">03</span><h3${ED('track.delivery.title')}>${escapeHTML(T('track.delivery.title','第1号案件の導入'))}</h3><small${ED('track.delivery.period')}>${escapeHTML(T('track.delivery.period','9月〜翌3月'))}</small></div><p class="track-description"${ED('track.delivery.description')}>${escapeHTML(T('track.delivery.description','合意から規程整備・審査・説明会を経て、制度をスタートする。'))}</p><div class="track-count"><span>実績の登録状況</span><strong style="font-size:.9375rem">進捗未登録</strong></div><div class="progress"></div><div class="track-next"><small>次の節目</small><span${ED('track.delivery.next')}>${escapeHTML(T('track.delivery.next','9月中に導入合意'))}</span><a class="text-link" href="#schedule">導入の計画を確認 →</a></div></article>`;
     const changed=state.source==='local'&&(state.updatedAt||state.imported);
     const stamp=v=>new Date(v).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
-    $('dataMode').textContent=changed?'この端末で変更中':BOARD?'共有の進捗':'初期状態';
-    $('dataDescription').textContent=changed?(state.updatedAt?`最終更新 ${new Date(state.updatedAt).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})} · このブラウザの進捗を反映`:'このブラウザに保存されていた進捗を引き継いでいます。'):BOARD?`最終更新 ${BOARD.updatedAt?stamp(BOARD.updatedAt):'—'}${BOARD.updatedBy?' · '+BOARD.updatedBy:''}${BOARD.note?' · '+BOARD.note:''}`:'共有の進捗を読み込めなかったため、初期状態を表示しています。';
+    const dc=draftCount(),SRC=SHARED.updatedAt?SHARED:BOARD;
+    $('dataMode').textContent=dc?'この端末で編集中':changed?'この端末で変更中':(SHARED.updatedAt||BOARD)?'共有の進捗':'初期状態';
+    $('dataDescription').textContent=dc?`未書き出しの編集 ${dc}件 · 下のバーから content.json を書き出すと全員に反映されます`:changed?(state.updatedAt?`最終更新 ${new Date(state.updatedAt).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})} · このブラウザの進捗を反映`:'このブラウザに保存されていた進捗を引き継いでいます。'):SRC?`最終更新 ${SRC.updatedAt?stamp(SRC.updatedAt):'—'}${SRC.updatedBy?' · '+SRC.updatedBy:''}${SRC.note?' · '+SRC.note:''}`:'共有の進捗を読み込めなかったため、初期状態を表示しています。';
     $('saveLabel').textContent=state.saveFailed?'未保存 · この画面のみ反映':'このブラウザに保存';
     $('saveLabel').classList.toggle('due-alert',state.saveFailed);
   }
   function renderBoard(){
     const filtered=state.tasks.filter(t=>state.filter==='all'||t.track===state.filter);
-    $('kanbanBoard').innerHTML=STATUS_ORDER.map(status=>{const tasks=filtered.filter(t=>t.status===status);return `<section class="kanban-column" data-status="${status}" aria-label="${STATUS_LABELS[status]}"><h2 class="kanban-head">${STATUS_LABELS[status]}<span>${tasks.length}</span></h2><div class="dropzone" data-dropzone="${status}">${tasks.length?tasks.map(t=>`<button class="task-card" draggable="true" data-task="${t.id}"><span class="task-category">${trackById(t.track).title}</span><strong>${escapeHTML(t.title)}</strong><span class="task-meta">${dueLabel(t)}<span class="task-id">${t.owner?escapeHTML(t.owner)+" · ":""}${t.id.toUpperCase()}</span></span></button>`).join(''):'<div class="empty-state">タスクはありません</div>'}</div></section>`;}).join('');
+    $('kanbanBoard').innerHTML=STATUS_ORDER.map(status=>{const tasks=filtered.filter(t=>t.status===status);return `<section class="kanban-column" data-status="${status}" aria-label="${SL(status)}"><h2 class="kanban-head">${SL(status)}<span>${tasks.length}</span></h2><div class="dropzone" data-dropzone="${status}">${tasks.length?tasks.map(t=>`<button class="task-card" draggable="true" data-task="${t.id}"><span class="task-category">${trackById(t.track).title}</span><strong>${escapeHTML(t.title)}</strong><span class="task-meta">${dueLabel(t)}<span class="task-id">${t.owner?escapeHTML(t.owner)+" · ":""}${t.id.toUpperCase()}</span></span></button>`).join(''):'<div class="empty-state">タスクはありません</div>'}</div></section>`;}).join('');
+    $('filterTabs').innerHTML=`<button data-track="all"${ED('tb.filterAll')}>${escapeHTML(T('tb.filterAll','すべて'))}</button>`+TRACKS.map(t=>`<button data-track="${t.id}">${escapeHTML(TRK(t,'title'))}</button>`).join('');
     document.querySelectorAll('[data-track]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.track===state.filter)));
   }
   function renderMap(){
     const active=state.selectedId?new Set([state.selectedId,...ancestors(state.selectedId),...descendants(state.selectedId)]):null;
-    $('mapGrid').innerHTML=LAYERS.map(l=>`<div class="map-col"><h2 class="map-col-title">${LEVEL_LABELS[l.key]}</h2>${NODES.filter(n=>n.L===l.key).map(n=>`<button class="map-node ${state.selectedId===n.id?'is-active':''} ${active&&!active.has(n.id)?'is-dim':''}" data-node="${n.id}" data-level="${n.L}" aria-pressed="${state.selectedId===n.id}">${n.cd?`<small>${escapeHTML(n.cd)}</small>`:''}${escapeHTML(n.t)}${n.L==='t'?statusPill(taskById(n.id).status):''}</button>`).join('')}</div>`).join('');
+    $('mapGrid').innerHTML=LAYERS.map(l=>`<div class="map-col"><h2 class="map-col-title"${ED('level.'+l.key)}>${escapeHTML(LL(l.key))}</h2>${ALL_NODES.filter(n=>n.L===l.key).map(n=>`<button class="map-node ${state.selectedId===n.id?'is-active':''} ${active&&!active.has(n.id)?'is-dim':''}" data-node="${n.id}" data-level="${n.L}" aria-pressed="${state.selectedId===n.id}">${n.cd?`<small>${escapeHTML(n.cd)}</small>`:''}${escapeHTML(n.t)}${n.L==='t'?statusPill(taskById(n.id).status):''}</button>`).join('')}</div>`).join('');
   }
   function renderDetail(){
     const node=nx.get(state.selectedId);if(!node)return;
+    if(state.edit)return renderDetailEdit(node);
     const task=taskById(node.id);
     const chain=[...ancestors(node.id)].map(id=>nx.get(id)).sort((a,b)=>LAYERS.findIndex(l=>l.key===a.L)-LAYERS.findIndex(l=>l.key===b.L));
     const related=[...descendants(node.id)].map(taskById).filter(Boolean);
-    $('detailBody').innerHTML=`<div>${task?statusPill(task.status):`<span class="outline-pill">${LEVEL_LABELS[node.L]}</span>`}</div><h2 id="detailTitle">${escapeHTML(node.t)}</h2><p class="detail-description">${escapeHTML(node.nt)}</p>${task?`<div class="detail-meta"><div><span class="meta-label">取り組み</span><span>${trackById(task.track).title}</span></div><div><span class="meta-label">期限</span><span>2026年 ${dueLabel(task)}</span></div><div><span class="meta-label">担当者</span><span>${escapeHTML(task.owner||'未設定')}</span></div><div><label for="taskStatus">進捗</label><select id="taskStatus">${STATUS_ORDER.map(s=>`<option value="${s}" ${s===task.status?'selected':''}>${STATUS_LABELS[s]}</option>`).join('')}</select></div></div><div class="detail-actions">${task.status!=='done'?`<button class="button primary" data-complete="${task.id}">完了にする ✓</button>`:'<span class="pill done">完了済み</span>'}<a class="button secondary" href="simulator.html">試算を開く ↗</a></div>`:''}${chain.length?`<div class="detail-section"><h3>この取り組みにつながる背景</h3>${chain.map(n=>`<div class="context-item"><small>${LEVEL_LABELS[n.L]}</small>${escapeHTML(n.t)}</div>`).join('')}</div>`:''}${related.length?`<div class="detail-section"><h3>関連タスク <span class="count-badge">${related.length}</span></h3>${related.map(t=>`<button class="detail-task" data-task="${t.id}">${escapeHTML(t.title)}${statusPill(t.status)}</button>`).join('')}</div>`:''}<p class="footnote">背景には提供資料の仮説・前提を含みます。</p>`;
+    $('detailBody').innerHTML=`<div>${task?statusPill(task.status):`<span class="outline-pill">${LL(node.L)}</span>`}</div><h2 id="detailTitle">${escapeHTML(node.t)}</h2><p class="detail-description">${escapeHTML(node.nt)}</p>${task?`<div class="detail-meta"><div><span class="meta-label">取り組み</span><span>${trackById(task.track).title}</span></div><div><span class="meta-label">期限</span><span>2026年 ${dueLabel(task)}</span></div><div><span class="meta-label">担当者</span><span>${escapeHTML(task.owner||'未設定')}</span></div><div><label for="taskStatus">進捗</label><select id="taskStatus">${STATUS_ORDER.map(s=>`<option value="${s}" ${s===task.status?'selected':''}>${SL(s)}</option>`).join('')}</select></div></div><div class="detail-actions">${task.status!=='done'?`<button class="button primary" data-complete="${task.id}">完了にする ✓</button>`:'<span class="pill done">完了済み</span>'}<a class="button secondary" href="simulator.html">試算を開く ↗</a></div>`:''}${chain.length?`<div class="detail-section"><h3>この取り組みにつながる背景</h3>${chain.map(n=>`<div class="context-item"><small>${LL(n.L)}</small>${escapeHTML(n.t)}</div>`).join('')}</div>`:''}${related.length?`<div class="detail-section"><h3>関連タスク <span class="count-badge">${related.length}</span></h3>${related.map(t=>`<button class="detail-task" data-task="${t.id}">${escapeHTML(t.title)}${statusPill(t.status)}</button>`).join('')}</div>`:''}<p class="footnote">背景には提供資料の仮説・前提を含みます。</p>`;
   }
   function openDetail(id){if(!nx.has(id))return;if(!$('detailDialog').open)returnFocus=document.activeElement;state.selectedId=id;renderMap();renderDetail();if(!$('detailDialog').open)$('detailDialog').showModal();}
   function closeDetail(){const d=$('detailDialog');if(d.open)d.close();}
-  function updateTask(id,status){const t=taskById(id);if(!t||!STATUS_ORDER.includes(status)||t.status===status)return;t.status=status;state.updatedAt=new Date().toISOString();state.source='local';const saved=persist();const focusId=document.activeElement?.id;renderAll();if($('detailDialog').open){renderDetail();if(focusId&&$(focusId))$(focusId).focus();}notify(saved?`「${STATUS_LABELS[status]}」に更新しました`:'進捗を更新しましたが、ブラウザに保存できませんでした');}
+  function updateTask(id,status){const t=taskById(id);if(!t||!STATUS_ORDER.includes(status)||t.status===status)return;t.status=status;state.updatedAt=new Date().toISOString();state.source='local';const saved=persist();const focusId=document.activeElement?.id;renderAll();if($('detailDialog').open){renderDetail();if(focusId&&$(focusId))$(focusId).focus();}notify(saved?`「${SL(status)}」に更新しました`:'進捗を更新しましたが、ブラウザに保存できませんでした');}
   function renderPlanner(){
     $('plannerMonth').innerHTML=OPTIONS.map(([y,m])=>`<option value="${ym(y,m)}" ${state.selectedMonth===ym(y,m)?'selected':''}>${y}年${m}月</option>`).join('');
     const chosen=state.selectedMonth,start=chosen-6,slack=start-NOW;
     $('plannerResult').className=`planner-result ${slack<=1?'warning':''}`;
     $('plannerResult').textContent=slack<0?`標準6か月では、${fmt(fromIdx(start))}の合意を想定する日程です。工程の見直しが必要です。`:slack===0?'標準6か月で進めるには、今月中の導入合意が必要です。':`標準6か月では、合意の目安まであと${slack}か月です。`;
     const first=chosen+1,o=fromIdx(first),apply=ym(o.m>6?o.y+1:o.y,9);
-    $('plannerSummaries').innerHTML=`<div><span>導入合意の目安</span><strong>${fmt(fromIdx(start))}</strong></div><div><span>新保険料適用の想定</span><strong>${fmt(fromIdx(apply))}</strong></div><div><span>会社のCF実現の想定</span><strong>${fmt(fromIdx(apply+1))}</strong></div><p class="footnote">${o.m<=4?'4〜6月の算定対象期間全体への反映を想定。':o.m<=6?'4〜6月の一部への反映を想定。削減額は対象月数により変わります。':'初回給与が7月以降のため、翌年の定時決定を想定。'}</p>`;
-    $('plannerSteps').innerHTML=STEPS.map(([off,title])=>{const month=chosen+off;return `<div class="planner-step ${month<NOW?'past':''}"><time>${fromIdx(month).y}.${String(fromIdx(month).m).padStart(2,'0')}</time><span>${escapeHTML(title)}</span></div>`;}).join('');
+    $('plannerSummaries').innerHTML=`<div><span${ED('pl.agree')}>${escapeHTML(T('pl.agree','導入合意の目安'))}</span><strong>${fmt(fromIdx(start))}</strong></div><div><span${ED('pl.apply')}>${escapeHTML(T('pl.apply','新保険料適用の想定'))}</span><strong>${fmt(fromIdx(apply))}</strong></div><div><span${ED('pl.cf')}>${escapeHTML(T('pl.cf','会社のCF実現の想定'))}</span><strong>${fmt(fromIdx(apply+1))}</strong></div><p class="footnote">${o.m<=4?'4〜6月の算定対象期間全体への反映を想定。':o.m<=6?'4〜6月の一部への反映を想定。削減額は対象月数により変わります。':'初回給与が7月以降のため、翌年の定時決定を想定。'}</p>`;
+    $('plannerSteps').innerHTML=STEPS.map(([off,title],si)=>{const month=chosen+off;return `<div class="planner-step ${month<NOW?'past':''}"><time>${fromIdx(month).y}.${String(fromIdx(month).m).padStart(2,'0')}</time><span${ED('step.'+si)}>${escapeHTML(T('step.'+si,title))}</span></div>`;}).join('');
   }
   function renderGantt(){
     let h='<div class="gh gl" style="grid-row:1;grid-column:1">取り組み / 予定</div>';
     MONTHS.forEach((m,i)=>{const now=ym(m.y,m.m)===NOW;h+=`<div class="gh ${now?'now':''}" style="grid-row:1;grid-column:${i+2}">${i===0||m.m===1?`<span class="year">${m.y}</span>`:''}${m.l}${now?' · 今月':''}</div>`;});
-    GANTT_ROWS.forEach((r,ri)=>{const row=ri+2;h+=`<div class="gl" style="grid-row:${row};grid-column:1">${r.l}</div>`;MONTHS.forEach((m,i)=>h+=`<div class="gc ${ym(m.y,m.m)===NOW?'now':''}" style="grid-row:${row};grid-column:${i+2}"></div>`);(r.b||[]).forEach(([s,e,c,t])=>h+=`<div class="gbar ${c}" title="${escapeHTML(t)}" style="grid-row:${row};grid-column:${s+2}/${e+2}">${escapeHTML(t)}</div>`);(r.f||[]).forEach(([c,t])=>h+=`<div class="gflag" style="grid-row:${row};grid-column:${c+2}">${escapeHTML(t)}</div>`);});
+    GANTT_ROWS.forEach((r,ri)=>{const row=ri+2;const kl='gantt.r'+ri+'.l';h+=`<div class="gl" style="grid-row:${row};grid-column:1"${ED(kl)}>${escapeHTML(T(kl,r.l))}</div>`;MONTHS.forEach((m,i)=>h+=`<div class="gc ${ym(m.y,m.m)===NOW?'now':''}" style="grid-row:${row};grid-column:${i+2}"></div>`);(r.b||[]).forEach(([s,e,c,t],bi)=>{const k='gantt.r'+ri+'.b'+bi,v=T(k,t);h+=`<div class="gbar ${c}" title="${escapeHTML(v)}" style="grid-row:${row};grid-column:${s+2}/${e+2}"${ED(k)}>${escapeHTML(v)}</div>`;});(r.f||[]).forEach(([c,t],fi)=>{const k='gantt.r'+ri+'.f'+fi,v=T(k,t);h+=`<div class="gflag" style="grid-row:${row};grid-column:${c+2}"${ED(k)}>${escapeHTML(v)}</div>`;});});
     $('masterGantt').innerHTML=h;
   }
-  function renderAll(){renderOverview();renderBoard();renderMap();renderPlanner();renderGantt();}
-  function route(){const aliases={planner:'schedule',gantt:'schedule',kanban:'tasks',simulator:'schedule'},hash=location.hash.slice(1),view=aliases[hash]||hash;state.view=['overview','tasks','schedule','map'].includes(view)?view:'overview';document.querySelectorAll('.view').forEach(el=>el.hidden=el.id!==`view-${state.view}`);document.querySelectorAll('[data-view]').forEach(el=>{const active=el.dataset.view===state.view;el.classList.toggle('is-active',active);if(active){el.setAttribute('aria-current','page');$('breadcrumb').textContent=el.textContent.replace(/\d+$/,'').trim();}else el.removeAttribute('aria-current');});document.title=`${({overview:'プロジェクトの現在地',tasks:'タスクボード',schedule:'スケジュール',map:'判断の背景'})[state.view]} | 選択制DC`;}
+  function renderAll(){renderOverview();renderBoard();renderMap();renderPlanner();renderGantt();applyStaticTexts();applyEditable();}
+  function route(){const aliases={planner:'schedule',gantt:'schedule',kanban:'tasks',simulator:'schedule'},hash=location.hash.slice(1),view=aliases[hash]||hash;state.view=['overview','tasks','schedule','map'].includes(view)?view:'overview';document.querySelectorAll('.view').forEach(el=>el.hidden=el.id!==`view-${state.view}`);document.querySelectorAll('[data-view]').forEach(el=>{const active=el.dataset.view===state.view;el.classList.toggle('is-active',active);if(active){el.setAttribute('aria-current','page');$('breadcrumb').textContent=(el.querySelector('[data-nav-label]')?.textContent||el.textContent).replace(/\d+$/,'').trim();}else el.removeAttribute('aria-current');});document.title=`${({overview:'プロジェクトの現在地',tasks:'タスクボード',schedule:'スケジュール',map:'判断の背景'})[state.view]} | 選択制DC`;}
   document.addEventListener('click',e=>{if(e.target.closest('.skip-link')){e.preventDefault();$('main').focus();$('main').scrollIntoView();return;}const task=e.target.closest('[data-task]'),node=e.target.closest('[data-node]'),complete=e.target.closest('[data-complete]'),filter=e.target.closest('[data-track]'),link=e.target.closest('[data-track-link]');if(task)openDetail(task.dataset.task);else if(node)openDetail(node.dataset.node);else if(complete)updateTask(complete.dataset.complete,'done');else if(filter){state.filter=filter.dataset.track;renderBoard();}else if(link){state.filter=link.dataset.trackLink;renderBoard();}});
   $('detailDialog').addEventListener('change',e=>{if(e.target.id==='taskStatus')updateTask(state.selectedId,e.target.value);});
   $('closeDetail').addEventListener('click',closeDetail);
   $('detailDialog').addEventListener('click',e=>{if(e.target===$('detailDialog')){const box=e.target.getBoundingClientRect();if(e.clientX<box.left||e.clientX>box.right||e.clientY<box.top||e.clientY>box.bottom)closeDetail();}});
-  $('detailDialog').addEventListener('close',()=>{if(returnFocus?.isConnected&&!returnFocus.closest('[hidden]'))returnFocus.focus();else{const returnId=returnFocus?.dataset.task||returnFocus?.dataset.node||state.selectedId;const fallback=[...document.querySelectorAll(`[data-task="${returnId}"], [data-node="${returnId}"]`)].find(el=>!el.closest('[hidden]')&&!el.closest('dialog'));if(fallback)fallback.focus();else $('main').focus();}});
+  $('detailDialog').addEventListener('close',()=>{
+    if(state.edit){rebuildTasks();renderAll();}if(returnFocus?.isConnected&&!returnFocus.closest('[hidden]'))returnFocus.focus();else{const returnId=returnFocus?.dataset.task||returnFocus?.dataset.node||state.selectedId;const fallback=[...document.querySelectorAll(`[data-task="${returnId}"], [data-node="${returnId}"]`)].find(el=>!el.closest('[hidden]')&&!el.closest('dialog'));if(fallback)fallback.focus();else $('main').focus();}});
   $('clearMap').addEventListener('click',()=>{state.selectedId=null;renderMap();});
   $('plannerMonth').addEventListener('change',e=>{const value=Number(e.target.value);if(!OPTIONS.some(([y,m])=>ym(y,m)===value))return;state.selectedMonth=value;persist();renderPlanner();renderOverview();if(state.saveFailed)notify('比較条件を保存できませんでした');});
   $('resetBoardBtn').addEventListener('click',()=>$('resetDialog').showModal());
@@ -235,11 +293,174 @@
   $('kanbanBoard').addEventListener('dragend',()=>document.querySelectorAll('.is-over').forEach(el=>el.classList.remove('is-over')));
   window.addEventListener('hashchange',()=>{closeDetail();route();window.scrollTo({top:0,behavior:'instant'});$('main').focus({preventScroll:true});});
   window.addEventListener('storage',e=>{if(e.key===TASK_KEY){const incoming=loadState();Object.assign(state,incoming);renderAll();if($('detailDialog').open)renderDetail();}});
+
+  /* ===================== 編集モード ===================== */
+  function captureDefaults(){
+    document.querySelectorAll('[data-ed]').forEach(el=>{
+      const k=el.dataset.ed;
+      if(!(k in DEFAULTS)) DEFAULTS[k]=el.hasAttribute('data-ed-html')?el.innerText:el.textContent;
+    });
+  }
+  function applyStaticTexts(){
+    Object.keys(DEFAULTS).forEach(k=>{
+      document.querySelectorAll('[data-ed="'+k+'"]').forEach(el=>{
+        const v = typeof C.texts[k]==='string' ? C.texts[k] : DEFAULTS[k];
+        if(el.hasAttribute('data-ed-html')){ if(el.innerText!==v) el.innerHTML=nl2br(escapeHTML(v)); }
+        else if(el.textContent!==v) el.textContent=v;
+      });
+    });
+  }
+  function applyEditable(){
+    document.querySelectorAll('[data-ed]').forEach(el=>{
+      if(state.edit){el.setAttribute('contenteditable','true');el.setAttribute('spellcheck','false');}
+      else el.removeAttribute('contenteditable');
+    });
+    const add=$('addTaskBtn'); if(add) add.hidden=!state.edit;
+  }
+  function refreshEditBar(){
+    const n=draftCount();
+    $('editBar').hidden=!(state.edit||n>0);
+    $('editState').textContent=state.edit
+      ? (n?`編集中 · 未書き出し ${n}件`:'編集中 · 文字をタップすると直せます')
+      : `未書き出しの編集 ${n}件（この端末だけに保存されています）`;
+    $('editToggle').textContent=state.edit?'編集を終える':'文言を編集';
+    $('editDone').hidden=!state.edit;
+  }
+  function setEditMode(on){
+    state.edit=on;document.body.classList.toggle('editing',on);closeDetail();
+    renderAll();refreshEditBar();
+    notify(on?'編集モードです。文字をタップすると直せます':'編集モードを終了しました');
+  }
+  function rebuildTasks(){
+    const keep={};state.tasks.forEach(t=>keep[t.id]=t.status);
+    buildNodes();state.tasks=seedTasks();
+    state.tasks.forEach(t=>{const o=C.tasks[t.id]||{};if(!STATUS_ORDER.includes(o.status)&&keep[t.id])t.status=keep[t.id];});
+  }
+  /* 文字をタップしたら、リンクを開かずその場で編集する */
+  document.addEventListener('click',e=>{
+    if(!state.edit)return;
+    if(e.target.closest('.edit-bar')||e.target.closest('dialog'))return;
+    const el=e.target.closest('[data-ed]');
+    if(!el)return;
+    e.preventDefault();e.stopPropagation();
+    el.focus();
+    try{const r=document.createRange();r.selectNodeContents(el);const sel=getSelection();sel.removeAllRanges();sel.addRange(r);sel.collapseToEnd();}catch{}
+  },true);
+  document.addEventListener('focusout',e=>{
+    if(!state.edit)return;
+    const el=e.target.closest?.('[data-ed]');
+    if(!el||el.getAttribute('contenteditable')!=='true')return;
+    const k=el.dataset.ed;
+    const v=(el.hasAttribute('data-ed-html')?el.innerText:el.textContent).replace(/\u00a0/g,' ').replace(/\s+$/,'');
+    setText(k,v);
+    if(/^(track\.|status\.|level\.)/.test(k)){renderAll();}
+  });
+  /* タスク・ノードの編集フォーム */
+  function renderDetailEdit(node){
+    const task=taskById(node.id);
+    const val=v=>escapeHTML(v??'');
+    $('detailBody').innerHTML=`
+      <div><span class="outline-pill">${task?'タスクを編集':escapeHTML(LL(node.L))+'を編集'}</span></div>
+      <h2 id="detailTitle">${task?'タスクの内容':'文言'}を書きかえる</h2>
+      <div class="edit-form">
+        <label>見出し<input id="edTitle" type="text" value="${val(node.t)}"></label>
+        <label>説明・補足<textarea id="edDesc" rows="4">${val(node.nt)}</textarea></label>
+        ${task?`
+        <label>期限<input id="edDue" type="text" value="${val(task.due)}" placeholder="例：11月中 / 10月上旬"></label>
+        <label>担当<input id="edOwner" type="text" value="${val(task.owner)}" placeholder="例：高野部長・浜西"></label>
+        <label>取り組み<select id="edTrack">${TRACKS.map(t=>`<option value="${t.id}" ${t.id===task.track?'selected':''}>${escapeHTML(TRK(t,'title'))}</option>`).join('')}</select></label>
+        <label>進捗<select id="edStatus">${STATUS_ORDER.map(st=>`<option value="${st}" ${st===task.status?'selected':''}>${escapeHTML(SL(st))}</option>`).join('')}</select></label>`:''}
+      </div>
+      ${task?`<div class="detail-actions"><button class="button danger" id="edDelete">このタスクを消す</button></div>`:''}
+      <p class="footnote">直した内容はこの端末に保存されます。全員の画面に出すには、下のバーで content.json を書き出してGitHubに置きかえてください。</p>`;
+  }
+  $('detailDialog').addEventListener('input',e=>{
+    if(!state.edit||!state.selectedId)return;
+    const id=state.selectedId,node=nx.get(id),v=e.target.value;
+    if(e.target.id==='edTitle'){ if(node?.L==='t'){setTaskField(id,'title',v);const t=taskById(id);if(t)t.title=v;} else setText('node.'+id+'.t',v); }
+    else if(e.target.id==='edDesc'){ if(node?.L==='t'){setTaskField(id,'description',v);const t=taskById(id);if(t)t.description=v;} else setText('node.'+id+'.nt',v); }
+    else if(e.target.id==='edDue'){setTaskField(id,'due',v);const t=taskById(id);if(t)t.due=v;}
+    else if(e.target.id==='edOwner'){setTaskField(id,'owner',v);const t=taskById(id);if(t)t.owner=v;}
+  });
+  $('detailDialog').addEventListener('change',e=>{
+    if(!state.edit||!state.selectedId)return;
+    const id=state.selectedId;
+    if(e.target.id==='edTrack'){setTaskField(id,'track',e.target.value);const t=taskById(id);if(t)t.track=e.target.value;}
+    else if(e.target.id==='edStatus'){setTaskField(id,'status',e.target.value);const t=taskById(id);if(t)t.status=e.target.value;}
+  });
+  $('detailDialog').addEventListener('click',e=>{
+    if(e.target.id!=='edDelete')return;
+    const id=state.selectedId;
+    if(!confirm('このタスクを消しますか？'))return;
+    if(C.tasks[id]?.isNew){delete DRAFT.tasks[id];}
+    else if(!DRAFT.hidden.includes(id))DRAFT.hidden.push(id);
+    mergeContent();saveDraft();closeDetail();rebuildTasks();renderAll();refreshEditBar();
+    notify('タスクを消しました');
+  });
+  function addTask(){
+    const id='n'+Date.now().toString(36);
+    DRAFT.tasks[id]={isNew:true,title:'新しいタスク',description:'',due:'',owner:'',status:'todo',track:TRACKS.some(t=>t.id===state.filter)?state.filter:TRACKS[0].id};
+    mergeContent();saveDraft();rebuildTasks();renderAll();refreshEditBar();openDetail(id);
+  }
+  /* 書き出し */
+  function buildExport(){
+    const tasks={};
+    Object.entries(C.tasks).forEach(([id,v])=>{tasks[id]={...v};});
+    state.tasks.forEach(t=>{
+      const base=NODES.find(n=>n.id===t.id),o=tasks[t.id]||{};
+      o.status=t.status;
+      if(base){
+        const defTrack=TRACKS.find(x=>x.ids.includes(t.id))?.id||'preparation';
+        if(t.title!==base.t)o.title=t.title; else delete o.title;
+        if(t.description!==base.nt)o.description=t.description; else delete o.description;
+        if(t.due!==(base.due||''))o.due=t.due; else delete o.due;
+        if(t.owner!==(base.ow||''))o.owner=t.owner; else delete o.owner;
+        if(t.track!==defTrack)o.track=t.track; else delete o.track;
+      }else{
+        o.isNew=true;o.title=t.title;o.description=t.description;o.due=t.due;o.owner=t.owner;o.track=t.track;
+      }
+      tasks[t.id]=o;
+    });
+    return {updatedAt:new Date().toISOString(),
+            updatedBy:($('editBy').value||C.updatedBy||'').trim(),
+            note:($('editNote').value||'').trim(),
+            texts:{...C.texts},tasks,hidden:[...C.hidden]};
+  }
+  const exportJSON = () => JSON.stringify(buildExport(),null,2);
+  $('exportBtn').addEventListener('click',()=>{
+    try{
+      const blob=new Blob([exportJSON()],{type:'application/json'}),url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download='content.json';document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),2000);
+      notify('content.json を書き出しました');
+    }catch{notify('書き出せませんでした。「文字をコピー」をお使いください');}
+  });
+  $('copyBtn').addEventListener('click',async()=>{
+    try{await navigator.clipboard.writeText(exportJSON());notify('content.json の中身をコピーしました');}
+    catch{notify('コピーできませんでした');}
+  });
+  $('revertBtn').addEventListener('click',()=>{
+    if(!draftCount())return notify('取り消す編集はありません');
+    if(!confirm('この端末でした編集をすべて取り消しますか？'))return;
+    DRAFT=emptyC();try{localStorage.removeItem(CONTENT_KEY);}catch{}
+    mergeContent();rebuildTasks();renderAll();refreshEditBar();notify('編集を取り消しました');
+  });
+  $('howtoBtn').addEventListener('click',()=>$('howtoDialog').showModal());
+  $('howtoClose').addEventListener('click',()=>$('howtoDialog').close());
+  $('editToggle').addEventListener('click',()=>setEditMode(!state.edit));
+  $('editDone').addEventListener('click',()=>setEditMode(false));
+  document.addEventListener('click',e=>{if(e.target.closest('#addTaskBtn'))addTask();});
+  window.addEventListener('beforeunload',e=>{if(state.edit&&draftCount()){e.preventDefault();e.returnValue='';}});
   $('todayLabel').textContent=TODAY.toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit',weekday:'short'});
-  renderAll();route();
-  fetch('board.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{
-    if(!j||!Array.isArray(j.tasks))return;
-    BOARD=j;Object.assign(state,loadState());renderAll();if($('detailDialog').open)renderDetail();
-  }).catch(()=>{});
+  captureDefaults();renderAll();route();refreshEditBar();
+  const grab=u=>fetch(u+'?ts='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null);
+  Promise.all([grab('board.json'),grab('content.json')]).then(([b,c])=>{
+    if(b&&Array.isArray(b.tasks))BOARD=b;
+    if(c&&typeof c==='object')SHARED={texts:c.texts||{},tasks:c.tasks||{},hidden:Array.isArray(c.hidden)?c.hidden:[],updatedAt:c.updatedAt||null,updatedBy:c.updatedBy||'',note:c.note||''};
+    if(!b&&!c)return;
+    mergeContent();buildNodes();Object.assign(state,loadState());
+    if(SHARED.updatedBy&&$('editBy'))$('editBy').value=SHARED.updatedBy;
+    renderAll();if($('detailDialog').open)renderDetail();refreshEditBar();
+  });
   if(state.storageWarning)notify('保存データを読み込めなかったため、初期状態を表示しています');
 })();

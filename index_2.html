@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="選択制DC事業の目標、進捗、次のアクションを一つにつなぐプロジェクトダッシュボード。">
+  <title>プロジェクトの現在地 | 選択制DC</title>
+  <link rel="stylesheet" href="styles.css?v=5">
+</head>
+<body>
+  <a class="skip-link" href="#main">メインへ移動</a>
+  <aside class="sidebar">
+    <a class="brand" href="#overview"><span class="brand-mark">dc<span>↗</span></span><span><span data-ed="side.brand">DC PROJECT</span><small data-ed="side.brandSub">事業推進ワークスペース</small></span></a>
+    <div class="project-switch"><span class="project-icon">企</span><div><span data-ed="side.project">選択制企業型DC</span><small data-ed="side.projectSub">第1号案件・事業立ち上げ</small></div></div>
+    <p class="nav-label" data-ed="side.navLabel">ワークスペース</p>
+    <nav aria-label="メインナビゲーション">
+      <a href="#overview" data-view="overview"><span aria-hidden="true">◫</span><span class="nav-text" data-nav-label data-ed="nav.overview">プロジェクト概要</span></a>
+      <a href="#tasks" data-view="tasks"><span aria-hidden="true">☷</span><span class="nav-text" data-nav-label data-ed="nav.tasks">タスクボード</span><b id="navTaskCount">11</b></a>
+      <a href="#schedule" data-view="schedule"><span aria-hidden="true">▦</span><span class="nav-text" data-nav-label data-ed="nav.schedule">スケジュール</span></a>
+      <a href="#map" data-view="map"><span aria-hidden="true">◇</span><span class="nav-text" data-nav-label data-ed="nav.map">判断の背景</span></a>
+    </nav>
+    <p class="nav-label tools-label" data-ed="side.toolsLabel">検討ツール</p>
+    <a class="sim-link" href="simulator.html"><span aria-hidden="true">▤</span><span data-ed="side.simLink">収益シミュレータ</span><span aria-hidden="true">↗</span></a>
+    <div class="sidebar-bottom"><span class="small-label" data-ed="side.goalLabel">PROJECT GOAL</span><strong data-ed="side.goalText" data-ed-html>最初の1社から、<br>継続する事業へ。</strong><div class="side-target"><span data-ed="side.targetLabel">第1号施行目標</span><span data-ed="side.targetValue">2027.03</span></div><small data-ed="side.note">社内用 / プロトタイプ</small></div>
+  </aside>
+  <div class="workspace">
+    <header class="topbar"><span><span data-ed="top.project">選択制企業型DC</span> <span class="slash">/</span> <strong id="breadcrumb">プロジェクト概要</strong></span><span class="topbar-right"><span class="date-label" id="todayLabel"></span><button class="button secondary edit-toggle" id="editToggle">文言を編集</button></span></header>
+    <main id="main" tabindex="-1">
+      <section id="view-overview" class="view" aria-labelledby="overviewTitle">
+        <div class="page-heading"><div><p class="eyebrow" data-ed="ov.eyebrow">PROJECT OVERVIEW</p><h1 id="overviewTitle" data-ed="ov.title">プロジェクトの現在地</h1><p data-ed="ov.lead">目標を共有し、いま進めることを揃える。</p></div><a class="button secondary" href="#tasks"><span data-ed="ov.cta">タスクを更新</span> <span>↗</span></a></div>
+        <div class="data-notice"><span class="sample-pill" id="dataMode">共有の進捗</span><span id="dataDescription">読み込み中…</span><span class="save-label" id="saveLabel">このブラウザに保存</span></div>
+        <article class="mission-card"><div class="mission-copy"><div class="small-label" data-ed="mission.label">このプロジェクトで目指すこと</div><h2 data-ed="mission.title" data-ed-html>企業型DCを入口に、<br class="mobile-break">法人との継続取引をつくる。</h2><p data-ed="mission.body">第1号で運用負荷・投入工数・顧客の反応を測り、他社にも展開できる導入モデルをつくる。</p></div><div class="mission-target"><span data-ed="mission.targetLabel">第1号 施行目標</span><strong data-ed="mission.targetValue" data-ed-html>2027<span>年</span>03<span>月</span></strong><small data-ed="mission.targetNote">標準6か月の導入計画</small></div></article>
+        <div class="metric-grid" id="metrics"></div>
+        <div class="overview-grid">
+          <article class="panel journey-panel"><div class="panel-head"><div><p class="eyebrow" data-ed="jr.eyebrow">PROJECT JOURNEY</p><h2 data-ed="jr.title">ゴールまでの道筋</h2></div><a class="text-link" href="#schedule"><span data-ed="jr.link">計画を詳しく</span> <span>↗</span></a></div><div class="journey" id="journey"></div><div class="milestone-note"><span class="flag-icon" aria-hidden="true">⚑</span><div><strong data-ed="jr.milestoneTitle">直近の節目は、9月中の導入合意</strong><p data-ed="jr.milestoneBody">収益条件の確認と候補企業の選定を進め、提案できる状態へ。</p></div></div><p class="footnote" data-ed="jr.footnote">工程は計画です。第1号案件の合意・施行実績はまだ登録されていません。</p></article>
+          <article class="panel next-panel"><div class="panel-head"><div><p class="eyebrow" data-ed="na.eyebrow">NEXT ACTIONS</p><h2 data-ed="na.title">次に進めること</h2></div><span class="count-badge" id="nextCount">3件</span></div><p class="panel-description" data-ed="na.desc">未完了のうち、期限の早い順に表示</p><div id="nextActions"></div><a class="all-tasks" href="#tasks"><span data-ed="na.link">すべてのタスクを見る</span> <span>→</span></a></article>
+        </div>
+        <div class="section-heading"><div><h2 data-ed="tr.title">3つの取り組み</h2><p data-ed="tr.lead">事業の準備と営業を進めながら、第1号の導入につなげる。</p></div><span class="muted-caption" data-ed="tr.caption">完了数 / 登録タスク数</span></div>
+        <div class="track-grid" id="trackCards"></div>
+        <div class="expansion-strip"><span class="small-label" data-ed="ex.label">その先の展開</span><strong data-ed="ex.1">01 既存顧問先で検証</strong><span>→</span><span data-ed="ex.2">02 DM・会報誌で新規開拓</span><span>→</span><span data-ed="ex.3">03 説明会から案件化</span><span class="target-chip" data-ed="ex.chip">中期目標：アプローチ10件</span></div>
+      </section>
+      <section id="view-tasks" class="view" hidden aria-labelledby="tasksTitle">
+        <div class="page-heading"><div><p class="eyebrow" data-ed="tb.eyebrow">TASK BOARD</p><h1 id="tasksTitle" data-ed="tb.title">タスクボード</h1><p data-ed="tb.lead">タスクを選んで背景を確認し、進捗を更新。</p></div><div class="head-actions"><button class="button secondary" id="addTaskBtn" hidden>＋ タスクを追加</button><button class="button secondary" id="resetBoardBtn">初期状態に戻す</button></div></div>
+        <div class="board-toolbar"><div class="filter-tabs" id="filterTabs" role="group" aria-label="取り組みで絞り込み"></div><span class="muted-caption" data-ed="tb.caption">ドラッグまたは詳細の進捗メニューで変更</span></div>
+        <div class="kanban-board" id="kanbanBoard"></div>
+        <p class="footnote" data-ed="tb.footnote">期日の集計は「月中＝月末」「上旬＝10日」を区切りにしています。担当者は元データに含まれていません。</p>
+      </section>
+      <section id="view-schedule" class="view" hidden aria-labelledby="scheduleTitle">
+        <div class="page-heading"><div><p class="eyebrow" data-ed="sc.eyebrow">MASTER SCHEDULE</p><h1 id="scheduleTitle" data-ed="sc.title">ゴールから逆算する</h1><p data-ed="sc.lead">2026年9月合意・2027年3月施行を基準にした全体計画。</p></div><span class="outline-pill" data-ed="sc.pill">予定 / 実績とは別</span></div>
+        <article class="panel schedule-panel"><div class="panel-head"><h2 data-ed="sc.ganttTitle">プロジェクト全体の計画</h2><span class="muted-caption" data-ed="sc.ganttRange">2026.08 — 2027.10</span></div><div class="gantt-scroll" tabindex="0" role="region" aria-label="全体計画。横にスクロールできます"><div id="masterGantt" class="gantt"></div></div><div class="gantt-legend"><span><i class="j"></i><span data-ed="sc.legend1">自社・営業</span></span><span><i class="u"></i><span data-ed="sc.legend2">導入</span></span><span><i class="k"></i><span data-ed="sc.legend3">社会保険</span></span><span><i class="c"></i><span data-ed="sc.legend4">収益</span></span></div><p class="footnote" data-ed="sc.footnote">元資料の計画・前提を表示。制度日付や効果発生時期は、個別条件の確認が必要です。</p></article>
+        <div class="section-heading"><div><h2 data-ed="sc.planTitle">施行月を変えて、日程を比較</h2><p data-ed="sc.planLead">比較用の試算です。上の基準計画やプロジェクト目標は変更されません。</p></div></div>
+        <div class="planner-grid"><article class="panel"><label class="field-label" for="plannerMonth"><span data-ed="sc.planLabel">比較する施行月</span></label><select id="plannerMonth"></select><div class="planner-result" id="plannerResult"></div><div class="planner-summaries" id="plannerSummaries"></div><p class="footnote" data-ed="sc.planFootnote">標準6か月・翌月給与払い・定時決定を置いた概算。適用の可否は企業ごとの条件で確認します。</p></article><article class="panel"><h3 data-ed="sc.stepsTitle">導入のステップ</h3><div id="plannerSteps"></div></article></div>
+      </section>
+      <section id="view-map" class="view" hidden aria-labelledby="mapTitle">
+        <div class="page-heading"><div><p class="eyebrow" data-ed="mp.eyebrow">DECISION MAP</p><h1 id="mapTitle" data-ed="mp.title">判断の背景をたどる</h1><p data-ed="mp.lead">「なぜこのタスクを進めるのか」を、目的と仮説から確認。</p></div><button class="button secondary" id="clearMap">選択を解除</button></div>
+        <div class="map-guide"><span data-ed="mp.g1">目的</span><b>→</b><span data-ed="mp.g2">検討課題</span><b>→</b><span data-ed="mp.g3">仮説</span><b>→</b><span data-ed="mp.g4">検証</span><b>→</b><span data-ed="mp.g5">アクション</span></div>
+        <div class="map-scroll" tabindex="0" role="region" aria-label="判断の背景マップ"><div id="mapGrid" class="map-grid"></div></div><p class="footnote" data-ed="mp.footnote">元資料の仮説・前提を含みます。ノードのつながりは検討の背景で、タスクの着手順を制限するものではありません。</p>
+      </section>
+      <footer class="footer"><span data-ed="ft.1">選択制DC · 事業推進プロジェクト</span><span data-ed="ft.2">進捗はこのブラウザ内に保存されます</span></footer>
+    </main>
+  </div>
+  <dialog id="detailDialog" class="detail-dialog" aria-labelledby="detailTitle"><div class="drawer-top"><span class="small-label">DETAIL</span><button class="icon-button" id="closeDetail" aria-label="詳細を閉じる">×</button></div><div id="detailBody"></div></dialog>
+  <dialog id="resetDialog" class="confirm-dialog" aria-labelledby="resetTitle"><h2 id="resetTitle">共有の進捗に戻しますか？</h2><p>このブラウザで変更した進捗を破棄し、共有の進捗（board.json）の状態に戻します。</p><div class="dialog-actions"><button class="button secondary" id="cancelReset">キャンセル</button><button class="button primary" id="confirmReset">初期状態に戻す</button></div></dialog>
+  <dialog id="howtoDialog" class="confirm-dialog" aria-labelledby="howtoTitle">
+    <h2 id="howtoTitle">直した内容を、みんなの画面に出すまで</h2>
+    <ol class="howto">
+      <li>この画面で文言やタスクを直す（直した内容はこの端末に保存されます）。</li>
+      <li>下のバーの「content.json を書き出す」を押して、ファイルを保存する。スマホでうまく保存できないときは「文字をコピー」を使う。</li>
+      <li>GitHub の <b>hama112345/DCProject</b> を開き、<b>content.json</b> を置きかえてコミットする。ファイルをドラッグするか、鉛筆アイコンで中身を貼りかえる。</li>
+      <li>1〜2分でサイトに反映されます。反映されたら、この画面の「編集を取り消す」を押して端末側の控えを消しておくと、次から混乱しません。</li>
+    </ol>
+    <p class="footnote">元の文言や計画データは消えません。content.json は「上書きしたいところだけ」を書いたファイルです。</p>
+    <div class="dialog-actions"><button class="button primary" id="howtoClose">閉じる</button></div>
+  </dialog>
+  <div class="edit-bar" id="editBar" hidden>
+    <span class="edit-bar-state" id="editState"></span>
+    <input id="editBy" class="edit-input" type="text" placeholder="更新した人" aria-label="更新した人">
+    <input id="editNote" class="edit-input wide" type="text" placeholder="ひとことメモ（任意）" aria-label="ひとことメモ">
+    <button class="button primary" id="exportBtn">content.json を書き出す</button>
+    <button class="button secondary" id="copyBtn">文字をコピー</button>
+    <button class="button secondary" id="howtoBtn">公開のしかた</button>
+    <button class="button secondary" id="revertBtn">編集を取り消す</button>
+    <button class="button secondary" id="editDone" hidden>編集を終える</button>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">このダッシュボードを使うにはJavaScriptを有効にしてください。</p></noscript>
+  <script src="app.js?v=6"></script>
+</body>
+</html>
